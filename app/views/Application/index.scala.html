@@ -1,0 +1,13 @@
+@import base._
+@(flash: Flash)(implicit m: Messages)
+
+@title = @{m("title.application")}
+@scripts = @{Html("")}
+
+@fluid_main(flash, title, scripts) {
+    <div class="jumbotron">
+        <div class="container">
+            <h1>Hello World!</h1>
+        </div>
+    </div>
+}
