@@ -1,1 +1,13 @@
 title.application = アプリケーション
+
+general.operate = 操作
+
+event.id = ID
+event.title = タイトル
+event.presenter = 発表者
+event.date = 日付
+event.tag = タグ
+event.want.to.listen = 聞きたい！
+event.not.assignment = 未割り当て
+
+

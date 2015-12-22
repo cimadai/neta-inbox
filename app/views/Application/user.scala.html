@@ -1,0 +1,21 @@
+@import base._
+@import play.api.i18n._
+@import play.api.libs.json.JsValue
+@import play.api.mvc._
+
+@(flash: Flash, userInfo: UserInfo)(implicit m: Messages)
+
+@title = @{m("title.user")}
+@scripts = @{Html("")}
+
+@fluid_main(flash, title, Some(userInfo), scripts) {
+    <div class="container">
+        <div class="login-page clearfix">
+            <div class="logged-in-box auth0-box logged-in">
+                <img src="//cdn.auth0.com/samples/auth0_logo_final_blue_RGB.png" height="32px" />
+                <img class="avatar" src='@userInfo.picture' height="32px"/>
+                <span>Welcome @userInfo.familyName @userInfo.givenName</span>
+            </div>
+        </div>
+    </div>
+}

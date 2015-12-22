@@ -1,7 +1,8 @@
-@import base._
-@(flash: Flash, title: String, scripts: Html = Html(""))(content: Html)(implicit m: Messages)
+@import base. _
 
-@main(flash, title, scripts) {
+@(flash: Flash, title: String, userInfoOrNone: Option[UserInfo] = None, scripts: Html = Html(""))(content: Html)(implicit m: Messages)
+
+@main(flash, title, userInfoOrNone, scripts) {
 	<div class="container-fluid">
 	@content
 	</div>
