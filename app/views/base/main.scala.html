@@ -15,10 +15,13 @@
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/main.css")">
 
 	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
-	<script src="@routes.Assets.at("js/jquery-1.11.3.min.js")" type="text/javascript"></script>
+    <script src="@controllers.nonmember.page.routes.PublicPage.messages" type="text/javascript"></script>
+    <script src="@routes.Assets.at("js/jquery-1.11.3.min.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("js/jquery-migrate-1.2.1.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("js/jquery.cookie.js")" type="text/javascript"></script>
 	<script src="@routes.Assets.at("js/bootstrap.min.js")" type="text/javascript"></script>
-    <script src="https://cdn.auth0.com/js/lock-7.12.min.js"></script>
+    <script src="@routes.Assets.at("js/bootstrap-notify.min.js")" type="text/javascript"></script>
+    <script src="@routes.Assets.at("js/lock-7.12.min.js")" type="text/javascript"></script>
 </head>
 <body>
 	<div>
@@ -93,5 +96,6 @@
         <!-- /#wrapper -->
 
     @scripts
+    <script src="@routes.Assets.at("js/application-all.js")" type="text/javascript"></script>
 </body>
 </html>

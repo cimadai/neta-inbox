@@ -18,7 +18,8 @@ lazy val librairies = Seq(
   cache,
   ws,
   "com.h2database" % "h2" % "1.4.177",
-  "com.typesafe.play" %% "play-slick" % "1.0.0"
+  "com.typesafe.play" %% "play-slick" % "1.0.0",
+  "org.julienrf" %% "play-jsmessages" % "2.0.0"
 )
 
 lazy val root = (project in file("."))

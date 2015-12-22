@@ -1,6 +1,9 @@
 .DS_Store
 .sass-cache
-
+application-all.js
+application-all.js.map
+app/assets/js/*.js
+app/assets/js/*.js.map
 
 # Ignore Play! working directory #
 bin/

@@ -24,5 +24,14 @@ object EventReactionDao extends DaoCRUDWithId[EventReaction, EventReactionTable]
       EventReactionUserAndReactionType(userInfo, eventReactionType)
     })
   }
+
+  def toggleReaction(userInfoId: Long, eventInfoId: Long, reactionTypeId: Long)(implicit acc: DatabaseConfig[JdbcProfile]): Unit = {
+    findFirstByFilter(record => {
+      record.userInfoId === userInfoId && record.eventInfoId === eventInfoId && record.eventReactionTypeId === reactionTypeId
+    }) match {
+      case Some(reaction) => delete(reaction)
+      case _ => create(EventReaction(None, userInfoId, eventInfoId, reactionTypeId))
+    }
+  }
 }
 

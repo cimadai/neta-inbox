@@ -18,20 +18,24 @@ object UserInfoDao extends DaoCRUDWithId[UserInfo, UserInfoTable] with DaoBase w
 
   override def createDDL = baseQuery.schema.create
 
+  private def toUserInfo(jsonValue: JsValue): UserInfo = {
+    UserInfo(
+      None,
+      (jsonValue \ "email").as[String],
+      (jsonValue \ "family_name").as[String],
+      (jsonValue \ "given_name").as[String],
+      (jsonValue \ "name").as[String],
+      (jsonValue \ "nickname").as[String],
+      (jsonValue \ "picture").as[String],
+      (jsonValue \ "locale").as[String]
+    )
+  }
+
   def loadUserInfoOrNone(jsonValue: JsValue)(implicit acc: DatabaseConfig[JdbcProfile]): Option[UserInfo] = {
     val email = (jsonValue \ "email").as[String]
     if (email.endsWith("gmail.com")) {
       this.findFirstByFilter(_.email === email).fold( {
-        val userInfo = UserInfo(
-          None,
-          (jsonValue \ "email").as[String],
-          (jsonValue \ "family_name").as[String],
-          (jsonValue \ "given_name").as[String],
-          (jsonValue \ "name").as[String],
-          (jsonValue \ "nickname").as[String],
-          (jsonValue \ "picture").as[String],
-          (jsonValue \ "locale").as[String]
-        )
+        val userInfo = toUserInfo(jsonValue)
         val userInfoId = this.create(userInfo)
         if (userInfoId > 0) {
           Some(userInfo.copy(id = Some(userInfoId)))
@@ -40,6 +44,7 @@ object UserInfoDao extends DaoCRUDWithId[UserInfo, UserInfoTable] with DaoBase w
         }
       } ) { userInfo =>
         // 必要であれば更新処理
+        this.update(toUserInfo(jsonValue).copy(id = userInfo.id))
         Some(userInfo)
       }
     } else {

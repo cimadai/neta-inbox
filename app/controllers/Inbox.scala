@@ -22,4 +22,5 @@ object Inbox extends AuthenticateUtil {
   }
 
   // def postInbox(inboxItem: InboxItem)
+
 }
