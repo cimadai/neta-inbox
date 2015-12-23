@@ -1,0 +1,24 @@
+@(panelcolor: String, cssclass: String, num: Int, label: String, url: String)(implicit m: Messages)
+<div class="col-lg-3 col-md-6">
+	<div class="panel @{panelcolor}">
+		<div class="panel-heading">
+			<div class="row">
+				<div class="col-xs-3">
+					<i class="fa @cssclass fa-5x"></i>
+				</div>
+				<div class="col-xs-9 text-right">
+					<div class="huge">@num</div>
+					<div>@label</div>
+				</div>
+			</div>
+		</div>
+		<a href="@url">
+			<div class="panel-footer">
+				<span class="pull-left">@m("general.view.detail")</span>
+				<span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+				<div class="clearfix"></div>
+			</div>
+		</a>
+	</div>
+</div>
+

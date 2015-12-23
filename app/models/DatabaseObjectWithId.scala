@@ -1,4 +1,4 @@
-package dao.model
+package models
 
 abstract class DatabaseObjectWithId(val id: Option[Long])
 

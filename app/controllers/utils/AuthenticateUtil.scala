@@ -1,5 +1,6 @@
-package controllers
+package controllers.utils
 
+import controllers.BaseController
 import models.UserInfo
 import play.api.Play.current
 import play.api.cache.Cache
@@ -15,7 +16,7 @@ trait AuthenticateUtil extends BaseController {
       } map { profile =>
         f(request)
       }).orElse {
-        Some(Redirect(routes.Application.index()))
+        Some(Redirect(controllers.nonmember.page.routes.PublicPage.index()))
       }.get
     }
   }

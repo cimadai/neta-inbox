@@ -1,6 +1,6 @@
 package dao.utils
 
-import dao.DatabaseAccessor.jdbcProfile.api._
+import DatabaseAccessor.jdbcProfile.api._
 
 /**
  * DDLへのアクセスIF

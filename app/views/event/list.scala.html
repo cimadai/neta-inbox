@@ -1,0 +1,59 @@
+@import base._
+@import tags._
+@import event.parts._
+
+@import controllers.member.page.EventPage
+@import controllers.member
+@import controllers.member
+@(flash: Flash, userInfo: UserInfo, eventInfoWithReactionsList: Iterable[EventInfoWithReaction], assignedNum: Int, notAssignedNum: Int)(page: Int, pageSize: Int, numPages: Int)(implicit m: Messages)
+
+@title = @{m("title.event")}
+@scripts = @{Html("")}
+
+@fluid_main(flash, title, Some(userInfo), scripts) {
+    <div class="row">
+        @information_panel("panel-primary", "fa-star", assignedNum, m("event.user.assigned"), controllers.member.page.routes.EventPage.listAssigned().url)
+        @information_panel("panel-green", "fa-star-o", notAssignedNum, m("event.user.not.assigned"), controllers.member.page.routes.EventPage.listNotAssigned().url)
+        @information_panel("panel-yellow", "fa-tasks", assignedNum + notAssignedNum, m("event.user.all"), controllers.member.page.routes.EventPage.listAll().url)
+    </div>
+
+    @* 新規作成ボタンとページネーション *@
+    <div class="row">
+        <div class="col-md-12">
+            <a class="btn btn-info" href="#"><i class="fa fa-plus-circle"></i> @m("event.add")</a>
+            <nav class="pull-right">
+            @pagination("job/list", page, numPages, pageSize)
+            </nav>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-lg-12">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>@m("event.id")</th>
+                        <th>@m("event.title")</th>
+                        <th>@m("event.presenter")</th>
+                        <th>@m("event.date")</th>
+                        <th>@m("event.tag")</th>
+                        <th>@m("general.operate")</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @for(eventInfoWithReactions <- eventInfoWithReactionsList){
+                        @defining(eventInfoWithReactions.eventInfo) { ev =>
+                            @defining(eventInfoWithReactions.reactions) { reactions =>
+                                @defining(eventInfoWithReactions.tags) { tags =>
+                                    @event_record(ev, reactions, tags, eventInfoWithReactions.authorOrNoe)
+                                }
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}
+

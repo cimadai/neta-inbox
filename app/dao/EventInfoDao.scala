@@ -1,8 +1,9 @@
 package dao
 
-import dao.DaoBase.EventInfoTable
-import dao.DatabaseAccessor.jdbcProfile.api._
-import dao.utils.SchemaAccessible
+import dao.utils._
+import DaoBase.EventInfoTable
+import dao.utils.{DatabaseAccessor, DaoCRUDWithId, SchemaAccessible}
+import DatabaseAccessor.jdbcProfile.api._
 import models.EventInfo
 import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
@@ -17,5 +18,11 @@ object EventInfoDao extends DaoCRUDWithId[EventInfo, EventInfoTable] with DaoBas
 
   override def createDDL = baseQuery.schema.create
 
+  def getSizeOfUserAssigned()(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+    countByFilter(_.userInfoIdOrNone.isDefined)
+  }
+  def getSizeOfUserNotAssigned()(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+    countByFilter(_.userInfoIdOrNone.isEmpty)
+  }
 }
 

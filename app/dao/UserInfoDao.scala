@@ -1,8 +1,9 @@
 package dao
 
-import dao.DaoBase.UserInfoTable
-import dao.DatabaseAccessor.jdbcProfile.api._
-import dao.utils.SchemaAccessible
+import dao.utils._
+import DaoBase.UserInfoTable
+import dao.utils.{DatabaseAccessor, DaoCRUDWithId, SchemaAccessible}
+import DatabaseAccessor.jdbcProfile.api._
 import models.UserInfo
 import play.api.libs.json.JsValue
 import slick.backend.DatabaseConfig

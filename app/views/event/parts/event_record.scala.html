@@ -1,0 +1,28 @@
+@(ev: EventInfo, reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag], authorOrNoe: Option[UserInfo])(implicit m: Messages)
+<tr @if(authorOrNoe.isEmpty){ class="danger" }>
+    <td>@ev.id.get</td>
+    <td>@ev.title</td>
+    <td>@authorOrNoe.map(_.fullName).getOrElse(m("event.no.user"))</td>
+    <td>@ev.publishDateUnixMillis</td>
+    <td>
+        @for(tag <- tags){
+            <span class="label label-default">@{tag.text}</span>
+        }
+    </td>
+    <td>
+        <span class="btn btn-info event-reaction" data-event-id="@ev.id" data-reaction-type-id="1"> @m("event.want.to.listen")
+            <i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<span class="badge">@reactions.size</span>
+        </span>
+        <div>
+        @for(reaction <- reactions){
+            @reaction.userInfoOrNone match {
+                case Some(user) => {
+                    <img width="16px" height="16px" src="@{user.picture}" title="@{user.fullName}" />
+                }
+                case None => {}
+            }
+        }
+    </div>
+    </td>
+</tr>
+

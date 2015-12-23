@@ -1,7 +1,6 @@
-package dao
+package dao.utils
 
-import dao.DatabaseAccessor.jdbcProfile.api._
-import dao.utils.TableWithId
+import dao.utils.DatabaseAccessor.jdbcProfile.api._
 import models._
 import slick.lifted.TableQuery
 
@@ -13,6 +12,8 @@ trait DaoBase {
   val eventInfoQuery = DaoBase.eventInfoQuery
   val eventReactionQuery = DaoBase.eventReactionQuery
   val eventReactionTypeQuery = DaoBase.eventReactionTypeQuery
+  val eventTagQuery = DaoBase.eventTagQuery
+  val eventTagRelationQuery = DaoBase.eventTagRelationQuery
 }
 
 object DaoBase {
@@ -72,6 +73,28 @@ object DaoBase {
       (userInfoId, eventInfoId, eventReactionTypeId), unique = true)
 
     def * = (id.?, userInfoId, eventInfoId, eventReactionTypeId) <> (EventReaction.tupled, EventReaction.unapply)
+  }
+
+  /** ==================================================== */
+  protected val eventTagQuery = TableQuery[EventTagTable]
+  class EventTagTable(tag: Tag) extends TableWithId[EventTag](tag, "EVENT_TAGS") {
+    def text = column[String]("TEXT")
+
+    def * = (id.?, text) <> (EventTag.tupled, EventTag.unapply)
+  }
+
+  /** ==================================================== */
+  protected val eventTagRelationQuery = TableQuery[EventTagRelationTable]
+  class EventTagRelationTable(tag: Tag) extends Table[EventTagRelation](tag, "EVENT_TAG_RELATIONS") {
+    def eventInfoId = column[Long]("EVENT_INFO_ID")
+    def eventTagId = column[Long]("EVENT_TAG_ID")
+
+    def eventInfo = foreignKey(s"${tableName}_EVENT_INFO", eventInfoId, eventInfoQuery)(_.id)
+    def eventTag = foreignKey(s"${tableName}_EVENT_TAG", eventTagId, eventTagQuery)(_.id)
+
+    def pk = primaryKey(s"${tableName}_PK", (eventInfoId, eventTagId))
+
+    def * = (eventInfoId, eventTagId) <> (EventTagRelation.tupled, EventTagRelation.unapply)
   }
 }
 

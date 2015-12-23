@@ -1,0 +1,51 @@
+@import views.support.ViewSupport._
+
+@*
+ページネーション用のコントロールを表示する。
+[注意]クリックにより別のページを表示する際にurl文字列を参照するためroutesファイルの記述に依存する。
+*@
+@(url: String, currentPage: Int, numPages: Int, pageSize: Int, widthAroundCurrent: Int = 2, currentPageParamKey: String = "page", pageSizeParamKey: String = "pageSize")(implicit m: Messages)
+
+<ul class="pagination">
+    @* 前ボタン *@
+    @if(currentPage <= 1) {
+        <li class="disabled"><a>@Html(m("ui.pagenation.previouspage"))</a></li>
+    } else {
+        @defining(currentPage - 1) { targetPage =>
+            <li><a class="paginationAnchor" href="@urlWithParams(url, Map(currentPageParamKey -> targetPage, pageSizeParamKey -> pageSize))" data-page="@targetPage" data-pageSize="@pageSize">@Html(m("ui.pagenation.previouspage"))</a></li>
+        }
+    }
+
+        @* 最初のページ *@
+    @if(1 == currentPage) {
+        <li class="active"><a>1</a></li>
+    } else {
+        <li><a class="paginationAnchor" href="@urlWithParams(url, Map(currentPageParamKey -> 1, pageSizeParamKey -> pageSize))" data-page=1 data-pageSize="@pageSize">1@if((currentPage - 1) > widthAroundCurrent + 1) { ... }</a></li>
+    }
+
+    @for(page <- math.max(2, currentPage - widthAroundCurrent) to math.min(currentPage + widthAroundCurrent, numPages - 1)) {
+        @if(page == currentPage) {
+            <li class="active"><a>@page</a></li>
+        } else {
+            <li><a class="paginationAnchor" href="@urlWithParams(url, Map(currentPageParamKey -> page, pageSizeParamKey -> pageSize))" data-page="@page" data-pageSize="@pageSize">@page</a></li>
+        }
+    }
+
+        @* 最後のページ *@
+    @if(2 <= numPages) {
+        @if(numPages == currentPage) {
+            <li class="active"><a>@numPages</a></li>
+        } else {
+            <li><a class="paginationAnchor" href="@urlWithParams(url, Map(currentPageParamKey -> numPages, pageSizeParamKey -> pageSize))" data-page="@numPages" data-pageSize="@pageSize">@if((numPages - currentPage) > widthAroundCurrent + 1) { ... }@numPages</a></li>
+        }
+    }
+
+        @* 次ボタン *@
+    @if(numPages <= currentPage) {
+        <li class="disabled"><a>@Html(m("ui.pagenation.nextpage"))</a></li>
+    } else {
+        @defining(currentPage + 1) { targetPage =>
+            <li><a class="paginationAnchor" href="@urlWithParams(url, Map(currentPageParamKey -> targetPage, pageSizeParamKey -> pageSize))" data-page="@targetPage" data-pageSize="@pageSize">@Html(m("ui.pagenation.nextpage"))</a></li>
+        }
+    }
+</ul>

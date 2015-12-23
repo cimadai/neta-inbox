@@ -1,9 +1,8 @@
-package dao
+package dao.utils
 
-import dao.DatabaseAccessor.jdbcProfile.api._
-import dao.model.DatabaseObjectWithId
-import dao.utils.{TableWithId, QueryExtensions}
-import QueryExtensions._
+import DatabaseAccessor.jdbcProfile.api._
+import dao.utils.QueryExtensions._
+import models.DatabaseObjectWithId
 import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
 import slick.lifted.ColumnOrdered
@@ -12,6 +11,13 @@ abstract class DaoCRUD[Q, E <: Table[Q]] {
   def baseQuery: TableQuery[E]
 
   implicit def database(implicit databaseAccessor: DatabaseConfig[JdbcProfile]): Database
+
+  def count()(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+    baseQuery.length.result.runAndAwait.getOrElse(0)
+  }
+  def countByFilter[V <: Rep[Boolean]](filter: E => V)(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+    baseQuery.filter(filter).length.result.runAndAwait.get
+  }
 
   /**
    * 一覧
@@ -67,6 +73,18 @@ abstract class DaoCRUD[Q, E <: Table[Q]] {
 
   def getPagination(pageNo: Int, pageSize: Int)(implicit acc: DatabaseConfig[JdbcProfile]): (Iterable[Q], Int) = {
     (getPage(pageNo, pageSize), numPages(pageSize))
+  }
+
+  private def getPageByFilter[V <: Rep[Boolean]](filter: E => V)(pageNo: Int, pageSize: Int)(implicit acc: DatabaseConfig[JdbcProfile]): Iterable[Q] = {
+    baseQuery.filter(filter).page(pageNo, pageSize).result.runAndAwait.get
+  }
+
+  def numPagesByFilter[V <: Rep[Boolean]](filter: E => V)(pageSize: Int)(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+    baseQuery.filter(filter).numPages(pageSize).runAndAwait.get
+  }
+
+  def getPaginationByFilter[V <: Rep[Boolean]](filter: E => V)(pageNo: Int, pageSize: Int)(implicit acc: DatabaseConfig[JdbcProfile]): (Iterable[Q], Int) = {
+    (getPageByFilter(filter)(pageNo, pageSize), numPagesByFilter(filter)(pageSize))
   }
 }
 
