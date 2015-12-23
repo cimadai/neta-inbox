@@ -1,0 +1,15 @@
+@import base._
+@import tags._
+@import event.parts._
+
+@(flash: Flash, userInfo: UserInfo, eventOrNone: Option[EventInfo], form: Form[EventInfo])(implicit m: Messages)
+
+@title = @{m("title.event.edit")}
+@scripts = @{Html("")}
+
+@fluid_main(flash, title, Some(userInfo), scripts) {
+    <div class="row">
+        <div class="col-lg-12">
+        </div>
+    </div>
+}

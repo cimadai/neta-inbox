@@ -3,17 +3,19 @@
 # ~~~~
 
 # Home page
-GET         /                                          controllers.Application.index
-GET         /callback                                  controllers.Callback.callback(code: Option[String], state: Option[String])
-GET         /user                                      controllers.User.index
-GET         /logout                                    controllers.Application.logout
+GET         /                                          controllers.nonmember.page.PublicPage.index
+GET         /callback                                  controllers.nonmember.page.Callback.callback(code: Option[String], state: Option[String])
+GET         /user                                      controllers.member.page.User.index
+GET         /logout                                    controllers.nonmember.page.PublicPage.logout
 
-GET         /list                                      controllers.Inbox.list(page: Int ?= 1, size: Int ?= 10)
+GET         /event/list/all                            controllers.member.page.EventPage.listAll(page: Int ?= 1, size: Int ?= 10)
+GET         /event/list/assigned                       controllers.member.page.EventPage.listAssigned(page: Int ?= 1, size: Int ?= 10)
+GET         /event/list/noassigned                     controllers.member.page.EventPage.listNotAssigned(page: Int ?= 1, size: Int ?= 10)
 
 GET         /system/messages                           controllers.nonmember.page.PublicPage.messages
 
 # API
-POST        /api/event/:eventId/:reactionTypeId        controllers.api.EventApi.toggleResponse(eventId: Long, reactionTypeId: Long)
+POST        /api/event/:eventId/:reactionTypeId        controllers.member.api.EventApi.toggleResponse(eventId: Long, reactionTypeId: Long)
 
 
 # Map static resources from the /public folder to the /assets URL path

@@ -1,8 +1,9 @@
 package dao
 
-import dao.DaoBase.EventReactionTable
-import dao.DatabaseAccessor.jdbcProfile.api._
-import dao.utils.SchemaAccessible
+import dao.utils._
+import DaoBase.EventReactionTable
+import dao.utils.{DatabaseAccessor, DaoCRUDWithId, SchemaAccessible}
+import DatabaseAccessor.jdbcProfile.api._
 import models.{EventReaction, EventReactionUserAndReactionType}
 import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile

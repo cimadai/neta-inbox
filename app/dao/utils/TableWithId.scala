@@ -1,6 +1,6 @@
 package dao.utils
 
-import dao.DatabaseAccessor.jdbcProfile.api._
+import DatabaseAccessor.jdbcProfile.api._
 import slick.lifted.{AbstractTable, ForeignKeyQuery, Index}
 
 abstract class TableWithId[T](tag: Tag, name: String) extends Table[T](tag, name) {

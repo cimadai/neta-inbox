@@ -1,13 +1,14 @@
-package controllers
+package controllers.nonmember.page
 
+import controllers.BaseController
 import dao.UserInfoDao
 import helpers.Auth0Config
 import play.api.Play
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.http.{HeaderNames, MimeTypes}
-import play.api.libs.json.{JsValue, Json}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
+import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WS
 import play.api.mvc.Action
 
@@ -30,14 +31,14 @@ object Callback extends BaseController {
               case Some(userInfo) =>
                 // Cache the user and tokens into cache and session respectively
                 Cache.set(idToken+ "profile", userInfo)
-                Redirect(routes.User.index())
+                Redirect(controllers.member.page.routes.User.index())
                   .withSession(
                     "idToken" -> idToken,
                     "accessToken" -> accessToken
                   )
               case None =>
                 // 取得できなかったらダメ
-                Redirect(routes.Application.logout())
+                Redirect(controllers.nonmember.page.routes.PublicPage.logout())
             }
           }
 

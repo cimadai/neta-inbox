@@ -1,7 +1,7 @@
 package utils
 
 import _root_.slick.driver.JdbcProfile
-import dao.{EventInfoDao, EventReactionDao, EventReactionTypeDao, UserInfoDao}
+import dao._
 import models._
 import org.slf4j.LoggerFactory
 import play.api.db.slick.DatabaseConfigProvider
@@ -23,7 +23,9 @@ object Global extends GlobalSettings {
         UserInfoDao.createDDL,
         EventInfoDao.createDDL,
         EventReactionTypeDao.createDDL,
-        EventReactionDao.createDDL
+        EventReactionDao.createDDL,
+        EventTagDao.createDDL,
+        EventTagRelationDao.createDDL
       ))
       Await.result(f0, Duration.Inf)
     }
@@ -38,12 +40,20 @@ object Global extends GlobalSettings {
       val reactionTypeId = EventReactionTypeDao.create(EventReactionType(None, "聞きたい！"))
       val event1 = EventInfo(None, EventType.Require, "10分でわかるUnityゴリゴリ3Dプログラミング",
         "Unityを使った3Dグリングリンなゲームの作り方を10分で解説します。", Some(user1Id), 0, EventStatus.New)
-      val eventId = EventInfoDao.create(event1)
+      val event1Id = EventInfoDao.create(event1)
       val event2 = EventInfo(None, EventType.Require, "エンジニアが本気で3分クッキング",
         "てすと。", None, 0, EventStatus.New)
       EventInfoDao.create(event2)
-      EventReactionDao.create(EventReaction(None, user1Id, reactionTypeId, eventId))
-      EventReactionDao.create(EventReaction(None, user2Id, reactionTypeId, eventId))
+      EventReactionDao.create(EventReaction(None, user1Id, reactionTypeId, event1Id))
+      EventReactionDao.create(EventReaction(None, user2Id, reactionTypeId, event1Id))
+
+      val tagScala = EventTagDao.create(EventTag(None, "Scala"))
+      val tagJavaScript = EventTagDao.create(EventTag(None, "JavaScript"))
+      val tagPlayFramework = EventTagDao.create(EventTag(None, "PlayFramework"))
+
+      EventTagRelationDao.create(EventTagRelation(event1Id, tagScala))
+      EventTagRelationDao.create(EventTagRelation(event1Id, tagJavaScript))
+      EventTagRelationDao.create(EventTagRelation(event1Id, tagPlayFramework))
     }
     createTables()
     setupData()

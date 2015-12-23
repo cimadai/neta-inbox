@@ -1,5 +1,6 @@
-package controllers
+package controllers.member.page
 
+import controllers.utils.AuthenticateUtil
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 

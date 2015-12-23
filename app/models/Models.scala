@@ -1,7 +1,5 @@
 package models
 
-import dao.model.DatabaseObjectWithId
-
 case class UserInfo(
   override val id: Option[Long],
   email: String,
@@ -35,7 +33,17 @@ case class EventReaction(
   eventReactionTypeId: Long
 ) extends DatabaseObjectWithId(id)
 
+case class EventTag(
+  override val id: Option[Long],
+  text: String
+) extends DatabaseObjectWithId(id)
+
+case class EventTagRelation(
+  eventInfoId: Long,
+  eventTagId: Long
+)
+
 // for view
 case class EventReactionUserAndReactionType(userInfoOrNone: Option[UserInfo], eventReactionTypeOrNone: Option[EventReactionType])
-case class EventInfoWithReaction(eventInfo: EventInfo, authorOrNoe: Option[UserInfo], reactions: Iterable[EventReactionUserAndReactionType])
+case class EventInfoWithReaction(eventInfo: EventInfo, authorOrNoe: Option[UserInfo], reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag])
 

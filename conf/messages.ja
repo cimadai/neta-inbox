@@ -1,6 +1,10 @@
 title.application = アプリケーション
 
 general.operate = 操作
+general.view.detail = 詳細を見る
+
+ui.pagenation.previouspage = &laquo;
+ui.pagenation.nextpage = &raquo;
 
 event.id = ID
 event.title = タイトル
@@ -8,6 +12,9 @@ event.presenter = 発表者
 event.date = 日付
 event.tag = タグ
 event.want.to.listen = 聞きたい！
-event.not.assignment = 未割り当て
-
+event.no.user = 発表者未定
+event.user.assigned = 発表者割当済みのネタ
+event.user.not.assigned = 発表者未割当のネタ
+event.user.all = すべてのネタ
+event.add = 新しいネタを登録する
 
