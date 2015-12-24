@@ -18,7 +18,10 @@ object PublicPage extends BaseController {
   }
 
   def index = Action { implicit request =>
-    Ok(views.html.Application.index(request.flash, Auth0Config.get()))
+    val callbackUrl = if (request.secure) { s"https://${request.host}/callback" } else { s"http://${request.host}/callback" }
+    val newConfig = Auth0Config.get().copy(callbackURL = callbackUrl)
+    Auth0Config.set(newConfig)
+    Ok(views.html.Application.index(request.flash, newConfig))
   }
 
   def logout = Action { implicit request =>

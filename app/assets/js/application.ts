@@ -17,7 +17,6 @@ $(function () {
     if (window.AUTH0_CLIENT_ID) {
         var lock = new Auth0Lock(window.AUTH0_CLIENT_ID, window.AUTH0_DOMAIN);
 
-        console.log("callback = " + window.AUTH0_CALLBACK_URL);
         $(".btn-login").click(function (e) {
             e.preventDefault();
             lock.show({
