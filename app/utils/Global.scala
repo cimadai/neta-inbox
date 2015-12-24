@@ -31,7 +31,7 @@ object Global extends GlobalSettings {
     }
 
     def setupData(): Unit = {
-      val user1 = UserInfo(None, "dice.k1984@gmail.com", "嶋田", "大輔", "嶋田大輔", "daisuke-shimada", "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg", "ja")
+      val user1 = UserInfo(None, "dice.k1984@gmail.com", "嶋田", "大輔", "嶋田大輔", "daisuke-shimada", "https://lh5.googleusercontent.com/-t_SSgdNb9LM/AAAAAAAAAAI/AAAAAAAAAAA/5sUlkQ-eH6g/photo.jpg", "ja")
       val user1Id = UserInfoDao.create(user1).get
 
       val user2 = UserInfo(None, "test@gmail.com", "te", "st", "test", "test", "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg", "ja")
