@@ -31,7 +31,7 @@ object Callback extends BaseController {
               case Some(userInfo) =>
                 // Cache the user and tokens into cache and session respectively
                 Cache.set(idToken+ "profile", userInfo)
-                Redirect(controllers.member.page.routes.User.index())
+                Redirect(controllers.member.page.routes.EventPage.listAll())
                   .withSession(
                     "idToken" -> idToken,
                     "accessToken" -> accessToken
