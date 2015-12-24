@@ -2,14 +2,49 @@
 @import tags._
 @import event.parts._
 
-@(flash: Flash, userInfo: UserInfo, eventOrNone: Option[EventInfo], form: Form[EventInfo])(implicit m: Messages)
+@(flash: Flash, userInfo: UserInfo, eventOrNone: Option[EventInfo], tags: Iterable[EventTag], form: Form[EventInfoForForm])(implicit m: Messages)
 
+@isEdit = @{eventOrNone.isDefined}
+@authorExists = @{eventOrNone.map(_.authorIdOrNone).exists(_.isDefined)}
 @title = @{m("title.event.edit")}
 @scripts = @{Html("")}
 
 @fluid_main(flash, title, Some(userInfo), scripts) {
+    @form_error(form)
     <div class="row">
-        <div class="col-lg-12">
+        <div class="col-md-12 main-container">
+        @helper.form(action = controllers.member.page.routes.EventPage.postData(), 'class -> "form-horizontal") {
+            @if(isEdit) { @form_group_hidden("id", form("id")) }
+            @form_group_hidden("eventType", form("eventType"))
+            @form_group_input_text("title", Messages("event.title"), form("title"), cssClass = "col-sm-6")
+            @form_group_textarea("description", Messages("event.description"), form("description"), cssClass = "col-sm-6")('rows -> "11", 'placeholder -> m("event.description.placeholder"))
+            @form_group_hidden("authorIdOrNone", form("authorIdOrNone"))
+            @form_group_datepicker("publishDateUnixMillis", Messages("event.date"), form("publishDateUnixMillis"))
+            @form_group_hidden("status", form("status"))
+
+            @form_basic("tag", Messages("event.tag"), form("tags"), 3, "col-sm-4") {
+                <div class="event-tag-container">
+                    <input type="text" class="input form-control event-tag-typeahead" />
+                    @for(tag <- tags) {
+                        <span class="tag-label label label-default">
+                            @{tag.text}
+                            <i class="fa fa-close"></i>
+                            <input type="hidden" name="tags[]" value="@{tag.id}" />
+                        </span>
+                    }
+                </div>
+            }
+
+            @if(!authorExists) { @form_group_checkbox("registerMe", Messages("event.registerMe"), form("registerMe")) }
+
+            <div class="form-group">
+                <div class="col-xs-offset-3 col-sm-offset-3 col-md-offset-2 col-lg-offset-2 col-xs-9 col-sm-9 col-md-8 col-lg-8">
+                    <button type="submit" class="btn btn-primary">@if(isEdit) { @m("general.update") } else { @m("general.create") }</button>
+                    <a href="javascript:window.history.back();" class="btn btn-default">@Messages("general.cancel")</a>
+                </div>
+            </div>
+        }
         </div>
     </div>
+
 }

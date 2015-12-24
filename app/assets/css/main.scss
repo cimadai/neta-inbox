@@ -1,3 +1,69 @@
+@import "bootstrap/typeahead.css";
+
 .navbar-static-top {
   margin-bottom: 0;
 }
+
+$tagMargin: 0.5em;
+
+.tag-label {
+  margin-right: $tagMargin;
+  i {
+    margin-left: $tagMargin;
+    cursor: pointer;
+  }
+}
+
+.form-group input[type="checkbox"] {
+  display: none;
+}
+
+.form-group input[type="checkbox"] + .btn-group > label span {
+  width: 20px;
+}
+
+.form-group input[type="checkbox"] + .btn-group > label span:first-child {
+  display: none;
+}
+
+.form-group input[type="checkbox"] + .btn-group > label span:last-child {
+  display: inline-block;
+}
+
+.form-group input[type="checkbox"]:checked + .btn-group > label span:first-child {
+  display: inline-block;
+}
+
+.form-group input[type="checkbox"]:checked + .btn-group > label span:last-child {
+  display: none;
+}
+
+.checkbox-btn {
+  background-color: #FFF;
+}
+
+.datepicker {
+  cursor: pointer;
+}
+
+.reactions {
+  img {
+    margin: 0 3px 0 0;
+  }
+}
+
+.event-table {
+  .event-id { width: 2em; }
+  .event-presenter { width: 8em; }
+  .event-date { width: 10em; }
+  .event-tag { width: 15em; }
+  .event-operate { width: 6em; }
+}
+
+
+//<th class="event-id">@m("event.id")</th>
+//<th class="event-title">@m("event.title")</th>
+//<th class="event-presenter">@m("event.presenter")</th>
+//<th class="event-date">@m("event.date")</th>
+//<th class="event-tag">@m("event.tag")</th>
+//<th class="event-operate">@m("general.operate")</th>

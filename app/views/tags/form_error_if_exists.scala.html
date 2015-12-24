@@ -1,0 +1,14 @@
+@(field: Field)(implicit m: Messages)
+@groupClass = @{if (field.hasErrors) { "form-group has-error" } else { "form-group" }}
+		@if(field.hasErrors) {
+			@for(error <- field.errors) {
+				<p class="help-block">@m(error.message, error.args: _*)</p>
+			}
+		} else {
+			@if(field.constraints.nonEmpty) {
+				<p class="help-block">
+					@defining(field.constraints.head) { constraint => @Html(m(constraint._1, constraint._2: _*)) }
+					@for(constraint <- field.constraints.tail) { /  @Html(m(constraint._1, constraint._2: _*)) }
+				</p>
+			}
+		}

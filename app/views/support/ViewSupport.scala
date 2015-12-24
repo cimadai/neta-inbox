@@ -1,7 +1,10 @@
 package views.support
 
+import java.util.Date
+
 import org.joda.time.{DateTime, Duration}
 import play.api.data.Field
+import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.TextUtil
 
@@ -14,13 +17,6 @@ object ViewSupport {
 				s"""${attrName.name}="$attrValue""""
 			}.mkString(" ")
 		)
-
-	def expiresInDays(licenseEndDateTime: DateTime): Long = {
-		val now = new DateTime
-		val diffDays = new Duration(now, licenseEndDateTime)
-		val expiresInDays = diffDays.getStandardDays
-		expiresInDays
-	}
 
 	def urlWithParams(url: String, params: Map[String, Any]): String = {
 		val queryString = params.map { case (key, value) =>
@@ -51,5 +47,13 @@ object ViewSupport {
 	def toSiPrefixNotationText(n: Long): String = {
 		val (s, prefix) = TextUtil.toSiPrefixNotation(n)
 		s"${s.toDouble.floor.toLong} $prefix"
+	}
+
+	def formatDateTimeOrDefault(millis: Long, default: String): String = {
+		if (millis > 0) {
+			"%tY/%<tm/%<td %<tR" format new Date(millis)
+		} else {
+			default
+		}
 	}
 }

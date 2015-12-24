@@ -1,0 +1,13 @@
+@(paramName: String, label: String, field: Field, keyValueList: Iterable[(String, String)], labelBaseWidth: Int = 3, cssClass: String = "col-sm-4")(implicit m: Messages)
+@import tags._
+@form_basic(paramName, label, field, labelBaseWidth, cssClass) {
+	<select class="form-control" name="@{paramName}" id="input_@{paramName}">
+	@for(kv <- keyValueList) {
+		@if(field.value.getOrElse("") == kv._1) {
+			<option value="@kv._1" selected>@kv._2</option>
+		} else {
+			<option value="@kv._1">@kv._2</option>
+		}
+	}
+	</select>
+}

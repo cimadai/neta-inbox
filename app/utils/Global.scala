@@ -31,29 +31,47 @@ object Global extends GlobalSettings {
     }
 
     def setupData(): Unit = {
-      val user1 = UserInfo(None, "daisuke-shimada@altplus.co.jp", "嶋田", "大輔", "嶋田大輔", "daisuke-shimada",
-        "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg", "ja")
-      val user1Id = UserInfoDao.create(user1)
-      val user2 = UserInfo(None, "test@altplus.co.jp", "te", "st", "test", "test",
-        "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg", "ja")
-      val user2Id = UserInfoDao.create(user2)
-      val reactionTypeId = EventReactionTypeDao.create(EventReactionType(None, "聞きたい！"))
-      val event1 = EventInfo(None, EventType.Require, "10分でわかるUnityゴリゴリ3Dプログラミング",
-        "Unityを使った3Dグリングリンなゲームの作り方を10分で解説します。", Some(user1Id), 0, EventStatus.New)
-      val event1Id = EventInfoDao.create(event1)
-      val event2 = EventInfo(None, EventType.Require, "エンジニアが本気で3分クッキング",
-        "てすと。", None, 0, EventStatus.New)
-      EventInfoDao.create(event2)
-      EventReactionDao.create(EventReaction(None, user1Id, reactionTypeId, event1Id))
-      EventReactionDao.create(EventReaction(None, user2Id, reactionTypeId, event1Id))
+      val user1 = UserInfo(None, "daisuke-shimada@altplus.co.jp", "嶋田", "大輔", "嶋田大輔", "daisuke-shimada", "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg", "ja")
+      val user1Id = UserInfoDao.create(user1).get
 
-      val tagScala = EventTagDao.create(EventTag(None, "Scala"))
-      val tagJavaScript = EventTagDao.create(EventTag(None, "JavaScript"))
-      val tagPlayFramework = EventTagDao.create(EventTag(None, "PlayFramework"))
+      val user2 = UserInfo(None, "test@altplus.co.jp", "te", "st", "test", "test", "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg", "ja")
+      val user2Id = UserInfoDao.create(user2).get
+
+      val event1 = EventInfo(None, EventType.Require, "10分でわかるUnityゴリゴリ3Dプログラミング", "Unityを使った3Dグリングリンなゲームの作り方を10分で解説します。", Some(user2Id), 0, EventStatus.New)
+      val event1Id = EventInfoDao.create(event1).get
+
+      val event2 = EventInfo(None, EventType.Require, "エンジニアが本気でやる3分クッキング", "てすと。", None, 0, EventStatus.New)
+      val event2Id = EventInfoDao.create(event2).get
+
+      val event3 = EventInfo(None, EventType.Require, "ネタ募集箱を支える技術", "このネタ募集箱に使われている技術をご紹介します。", Some(user1Id), 0, EventStatus.New)
+      val event3Id = EventInfoDao.create(event3).get
+
+      val reactionTypeId = EventReactionTypeDao.create(EventReactionType(None, "聞きたい！")).get
+
+      val tagScala = EventTagDao.create(EventTag(None, "Scala")).get
+      val tagJavaScript = EventTagDao.create(EventTag(None, "JavaScript")).get
+      val tagPlayFramework = EventTagDao.create(EventTag(None, "PlayFramework")).get
+      val tagTypeScript = EventTagDao.create(EventTag(None, "TypeScript")).get
+      val tagScss = EventTagDao.create(EventTag(None, "SCSS")).get
+      val tagIntellij = EventTagDao.create(EventTag(None, "Intellij IDEA")).get
+
+      EventReactionDao.create(EventReaction(None, user1Id, event1Id, reactionTypeId))
+      EventReactionDao.create(EventReaction(None, user2Id, event1Id, reactionTypeId))
+
+      EventReactionDao.create(EventReaction(None, user1Id, event3Id, reactionTypeId))
+      EventReactionDao.create(EventReaction(None, user2Id, event3Id, reactionTypeId))
 
       EventTagRelationDao.create(EventTagRelation(event1Id, tagScala))
       EventTagRelationDao.create(EventTagRelation(event1Id, tagJavaScript))
       EventTagRelationDao.create(EventTagRelation(event1Id, tagPlayFramework))
+
+      EventTagRelationDao.create(EventTagRelation(event3Id, tagScala))
+      EventTagRelationDao.create(EventTagRelation(event3Id, tagJavaScript))
+      EventTagRelationDao.create(EventTagRelation(event3Id, tagPlayFramework))
+      EventTagRelationDao.create(EventTagRelation(event3Id, tagTypeScript))
+      EventTagRelationDao.create(EventTagRelation(event3Id, tagScss))
+      EventTagRelationDao.create(EventTagRelation(event3Id, tagIntellij))
+
     }
     createTables()
     setupData()

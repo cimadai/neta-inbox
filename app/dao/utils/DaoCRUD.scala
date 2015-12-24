@@ -93,8 +93,8 @@ abstract class DaoCRUDWithId[Q <: DatabaseObjectWithId, E <: TableWithId[Q]] ext
   /**
    * 作成
    */
-  def create(obj: Q)(implicit acc: DatabaseConfig[JdbcProfile]): Long = {
-    (baseQuery returning baseQuery.map(_.id)).insertOrUpdate(obj).runAndAwait.getOrElse(None).getOrElse(0)
+  def create(obj: Q)(implicit acc: DatabaseConfig[JdbcProfile]): Option[Long] = {
+    (baseQuery returning baseQuery.map(_.id)).insertOrUpdate(obj).runAndAwait.getOrElse(None)
   }
 
   /**

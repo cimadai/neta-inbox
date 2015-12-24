@@ -1,0 +1,3 @@
+@(paramName: String, field: Field)(implicit m: Messages)
+<input type="hidden" name="@{paramName}" value="@{field.value.getOrElse("")}" id="input_@paramName">
+
