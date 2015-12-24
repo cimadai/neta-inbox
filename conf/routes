@@ -11,11 +11,16 @@ GET         /logout                                    controllers.nonmember.pag
 GET         /event/list/all                            controllers.member.page.EventPage.listAll(page: Int ?= 1, size: Int ?= 10)
 GET         /event/list/assigned                       controllers.member.page.EventPage.listAssigned(page: Int ?= 1, size: Int ?= 10)
 GET         /event/list/noassigned                     controllers.member.page.EventPage.listNotAssigned(page: Int ?= 1, size: Int ?= 10)
+GET         /event/:eventId/edit                       controllers.member.page.EventPage.edit(eventId: Long)
+GET         /event/create                              controllers.member.page.EventPage.create
+POST        /event                                     controllers.member.page.EventPage.postData
 
 GET         /system/messages                           controllers.nonmember.page.PublicPage.messages
 
 # API
-POST        /api/event/:eventId/:reactionTypeId        controllers.member.api.EventApi.toggleResponse(eventId: Long, reactionTypeId: Long)
+POST        /api/event/tag/new/:key                    controllers.member.api.EventTagApi.addTag(key: String)
+GET         /api/event/tags                            controllers.member.api.EventTagApi.getAllTags
+POST        /api/event/:eventId/:reactionTypeId        controllers.member.api.EventApi.toggleReaction(eventId: Long, reactionTypeId: Long)
 
 
 # Map static resources from the /public folder to the /assets URL path

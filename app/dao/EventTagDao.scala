@@ -16,5 +16,13 @@ object EventTagDao extends DaoCRUDWithId[EventTag, EventTagTable] with DaoBase w
   override implicit def database(implicit acc: DatabaseConfig[JdbcProfile]) = acc.db
 
   override def createDDL = baseQuery.schema.create
+
+  def findByLikeTagName(key: String)(implicit acc: DatabaseConfig[JdbcProfile]): Iterable[EventTag] = {
+    findByFilter(_.text like s"%$key%")
+  }
+
+  def findByTagName(key: String)(implicit acc: DatabaseConfig[JdbcProfile]): Option[EventTag] = {
+    findFirstByFilter(_.text === key)
+  }
 }
 

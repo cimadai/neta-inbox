@@ -1,0 +1,16 @@
+@import tags._
+@(paramName: String, label: String, field: Field, labelBaseWidth: Int, cssClass: String)(content: Html)(implicit m: Messages)
+@groupClass = @{if (field.hasErrors) { "form-group has-error" } else { "form-group" }}
+@labelClass = @{ s"col-xs-$labelBaseWidth col-sm-$labelBaseWidth col-md-${labelBaseWidth - 1} col-lg-${labelBaseWidth - 1} control-label" }
+@bodyClass =  @{ s"col-xs-${12 - labelBaseWidth} col-sm-${12 - labelBaseWidth} col-md-${12 - labelBaseWidth + 1} col-lg-${12 - labelBaseWidth + 1}" }
+<div class="@groupClass">
+	<label for="input_@{paramName}" class="@labelClass">@Html(label)</label>
+	<div class="@bodyClass">
+		<div class="row">
+			<div class="@cssClass">
+				@content
+			</div>
+		</div>
+		@form_error_if_exists(field)
+	</div>
+</div>

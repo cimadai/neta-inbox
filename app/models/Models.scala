@@ -46,4 +46,31 @@ case class EventTagRelation(
 // for view
 case class EventReactionUserAndReactionType(userInfoOrNone: Option[UserInfo], eventReactionTypeOrNone: Option[EventReactionType])
 case class EventInfoWithReaction(eventInfo: EventInfo, authorOrNoe: Option[UserInfo], reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag])
-
+case class EventInfoForForm(
+  id: Option[Long],
+  eventType: EventType,
+  title: String,
+  description: String,
+  authorIdOrNone: Option[Long],
+  publishDateUnixMillis: Long,
+  status: EventStatus,
+  tags: List[Long],
+  registerMe: Boolean
+) {
+  def toEventInfo: EventInfo = {
+    EventInfo(this.id, this.eventType, this.title, this.description, this.authorIdOrNone, this.publishDateUnixMillis, this.status)
+  }
+}
+object EventInfoForForm {
+  def apply(ev: EventInfo)(implicit userInfo: UserInfo): EventInfoForForm = {
+    val registerMe = ev.authorIdOrNone match {
+      case Some(authorId) =>
+        userInfo.id match {
+          case Some(userId) => authorId == userId
+          case _ => false
+        }
+      case _ => false
+    }
+    EventInfoForForm(ev.id, ev.eventType, ev.title, ev.description, ev.authorIdOrNone, ev.publishDateUnixMillis, ev.status, List.empty, registerMe)
+  }
+}

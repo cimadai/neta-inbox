@@ -37,12 +37,7 @@ object UserInfoDao extends DaoCRUDWithId[UserInfo, UserInfoTable] with DaoBase w
     if (email.endsWith("gmail.com")) {
       this.findFirstByFilter(_.email === email).fold( {
         val userInfo = toUserInfo(jsonValue)
-        val userInfoId = this.create(userInfo)
-        if (userInfoId > 0) {
-          Some(userInfo.copy(id = Some(userInfoId)))
-        } else {
-          None
-        }
+        this.create(userInfo).map(userInfoId => userInfo.copy(id = Some(userInfoId)))
       } ) { userInfo =>
         // 必要であれば更新処理
         this.update(toUserInfo(jsonValue).copy(id = userInfo.id))

@@ -18,7 +18,6 @@ object EventPage extends AuthenticateUtil {
   object ListType extends Enumeration { val All, Assigned, NotAssigned = Value }
 
   private def getList(page: Int, size: Int, listType: ListType.Value)(implicit request: Request[_]): Result = {
-    println(listType)
     val (events, numPages) = listType match {
       case ListType.All =>
         val pages = EventInfoDao.getPagination(page, size)
@@ -70,29 +69,36 @@ object EventPage extends AuthenticateUtil {
       "description" -> text,
       "authorIdOrNone" -> optional(longNumber),
       "publishDateUnixMillis" -> longNumber,
-      "status" -> CustomConstraints.ofEventStatus
-    )(EventInfo.apply)(EventInfo.unapply)
+      "status" -> CustomConstraints.ofEventStatus,
+      "tags" -> list(longNumber),
+      "registerMe" -> boolean
+    )(EventInfoForForm.apply)(EventInfoForForm.unapply)
   }
 
   def create() = Action { implicit request =>
-    val newEvent = EventInfo(
+    val newEvent = EventInfoForForm(
       None,
       EventType.None,
       "New Event",
       "",
       None,
       0,
-      EventStatus.New
+      EventStatus.New,
+      List.empty,
+      registerMe = true
     )
     val userInfo = UserInfoDao.findById(1).get
-    Ok(views.html.event.edit(request.flash, userInfo, None, eventForm.fill(newEvent)))
+    val tags = Iterable.empty
+    Ok(views.html.event.edit(request.flash, userInfo, None, tags, eventForm.fill(newEvent)))
   }
 
   def edit(eventId: Long) = Action { implicit request =>
-    val userInfo = UserInfoDao.findById(1).get
+    implicit val userInfo = UserInfoDao.findById(1).get
     EventInfoDao.findById(eventId) match {
       case Some(eventInfo) =>
-        Ok(views.html.event.edit(request.flash, userInfo, Some(eventInfo), eventForm.fill(eventInfo)))
+        val event = EventInfoForForm(eventInfo)
+        val tags = EventTagRelationDao.findTagsByEventInfoId(eventId)
+        Ok(views.html.event.edit(request.flash, userInfo, Some(eventInfo), tags, eventForm.fill(event)))
       case _ => NotFound("")
     }
   }
@@ -102,18 +108,40 @@ object EventPage extends AuthenticateUtil {
     eventForm.bindFromRequest.fold(
       formWithErrors => {
         val maybeEventInfo = formWithErrors("id").value.flatMap(idStr => EventInfoDao.findById(idStr.toLong))
+        val tags = maybeEventInfo match {
+          case Some(eventInfo) => EventTagRelationDao.findTagsByEventInfoId(eventInfo.id.get)
+          case _ => Iterable.empty
+        }
         val errForm = formWithErrors.withGlobalError("event.edit.failed")
-        BadRequest(views.html.event.edit(request.flash, userInfo, maybeEventInfo, errForm))
+        BadRequest(views.html.event.edit(request.flash, userInfo, maybeEventInfo, tags, errForm))
       },
       formEventInfo => {
-        val successMessage = formEventInfo.id match {
-          case Some(syncJobId) =>
+        formEventInfo.authorIdOrNone
+        val newEventInfo = if (formEventInfo.registerMe) {
+          formEventInfo.copy(authorIdOrNone = userInfo.id).toEventInfo
+        } else {
+          formEventInfo.toEventInfo
+        }
+        val successMessage = newEventInfo.id match {
+          case Some(eventInfoId) =>
+            EventInfoDao.update(newEventInfo)
+            EventTagRelationDao.deleteByFilter(_.eventInfoId === eventInfoId)
+            formEventInfo.tags.foreach(tagId => {
+              EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
+            })
             Messages("event.edit.success")
           case _ =>
-            Messages("event.create.success")
+            EventInfoDao.create(newEventInfo) match {
+              case Some(eventInfoId) =>
+                formEventInfo.tags.foreach(tagId => {
+                  EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
+                })
+                Messages("event.create.success")
+              case _ =>
+                Messages("event.create.failed")
+            }
         }
 
-        EventInfoDao.update(formEventInfo)
         Redirect(controllers.member.page.routes.EventPage.listAll()).flashing("success" -> successMessage)
       }
     )

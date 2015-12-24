@@ -20,25 +20,24 @@
     @* 新規作成ボタンとページネーション *@
     <div class="row">
         <div class="col-md-12">
-            <a class="btn btn-info" href="#"><i class="fa fa-plus-circle"></i> @m("event.add")</a>
+            <a class="btn btn-info" href="@{controllers.member.page.routes.EventPage.create()}"><i class="fa fa-plus-circle"></i> @m("event.add")</a>
             <nav class="pull-right">
             @pagination("job/list", page, numPages, pageSize)
             </nav>
         </div>
     </div>
 
-
     <div class="row">
         <div class="col-lg-12">
-            <table class="table table-striped">
+            <table class="table table-striped event-table">
                 <thead>
                     <tr>
-                        <th>@m("event.id")</th>
-                        <th>@m("event.title")</th>
-                        <th>@m("event.presenter")</th>
-                        <th>@m("event.date")</th>
-                        <th>@m("event.tag")</th>
-                        <th>@m("general.operate")</th>
+                        <th class="event-id">@m("event.id")</th>
+                        <th class="event-title">@m("event.title")</th>
+                        <th class="event-presenter">@m("event.presenter")</th>
+                        <th class="event-date">@m("event.date")</th>
+                        <th class="event-tag">@m("event.tag")</th>
+                        <th class="event-operate">@m("general.operate")</th>
                     </tr>
                 </thead>
                 <tbody>

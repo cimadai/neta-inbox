@@ -1,0 +1,17 @@
+@(paramName: String, label: String, field: Field)(implicit m: Messages)
+@import tags._
+@checked = @{ if (field.value.getOrElse("false").toLowerCase == "true") { "checked" } else { "" } }
+@groupClass = @{if (field.hasErrors) { "form-group has-error" } else { "form-group" }}
+<div class="@groupClass">
+	<div class="col-xs-offset-3 col-sm-offset-3 col-md-offset-2 col-lg-offset-2 col-sm-10">
+		<input type="checkbox" name="@{paramName}" id="input_@{paramName}" value="true" @checked autocomplete="off" />
+		<div class="btn-group">
+			<label for="input_@{paramName}" class="btn btn-primary">
+				<span class="glyphicon glyphicon-ok"></span>
+				<span> </span>
+			</label>
+			<label for="input_@{paramName}" class="btn btn-default active checkbox-btn"> @label </label>
+		</div>
+		@form_error_if_exists(field)
+	</div>
+</div>

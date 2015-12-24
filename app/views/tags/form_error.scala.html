@@ -1,0 +1,9 @@
+@(form: Form[_])(implicit m: Messages)
+
+<div>
+	@form.globalError.map { error =>
+		<p class="notify hidden danger">
+			@m(error.message)
+		</p>
+	}
+</div>

@@ -40,5 +40,39 @@ object JsonModelWriterImplicits {
       )
     }
   }
+
+  implicit val eventTagWrites = new Writes[EventTag] {
+    def writes(obj: EventTag): JsValue = {
+      Json.obj(
+        "id" -> obj.id,
+        "text" -> obj.text
+      )
+    }
+  }
+
+  implicit val userInfoWrites = new Writes[UserInfo] {
+    def writes(obj: UserInfo): JsValue = {
+      Json.obj(
+        "fullName" -> obj.fullName,
+        "picture" -> obj.picture
+      )
+    }
+  }
+
+  implicit val eventReactionTypeWrites = new Writes[EventReactionType] {
+    def writes(obj: EventReactionType): JsValue = {
+      Json.obj(
+        "text" -> obj.text
+      )
+    }
+  }
+
+  implicit val eventReactionUserAndReactionTypeWrites = new Writes[EventReactionUserAndReactionType] {
+    def writes(obj: EventReactionUserAndReactionType): JsValue = {
+      Json.obj(
+        "userInfo" -> obj.userInfoOrNone.map(Json.toJson(_))
+      )
+    }
+  }
 }
 

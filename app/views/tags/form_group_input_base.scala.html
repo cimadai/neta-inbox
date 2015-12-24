@@ -1,0 +1,7 @@
+@import tags._
+@import views.support.ViewSupport._
+@(inputType: String, paramName: String, label: String, field: Field, labelBaseWidth: Int = 3, cssClass: String = "col-sm-4", disableAutoComplete: Boolean = false)(implicit m: Messages)
+@autoComplete = @{ if (disableAutoComplete) { "autocomplete=\"off\"" } else { "" }}
+@form_basic(paramName, label, field, labelBaseWidth, cssClass) {
+	<input type=@inputType class="form-control" name="@{paramName}" id="input_@{paramName}" value="@{field.value.getOrElse("")}" @{inputAttributesOfConstraints(field)} placeholder="" @autoComplete>
+}

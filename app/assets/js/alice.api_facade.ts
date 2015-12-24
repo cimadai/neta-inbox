@@ -8,8 +8,18 @@ namespace Alice.ApiFacade {
 
     export var Event = {
         toggleEventReaction: function (eventId: number, reactionTypeId: number, onSuccess?, onError?): void {
-            console.log(eventId, reactionTypeId)
             var url = apiBaseUrl + "event/" + eventId + "/" + reactionTypeId;
+            var data = {};
+            ajaxPost(url, data, onSuccess, onError);
+        }
+    };
+    export var EventTag = {
+        getAllTags: function (onSuccess?, onError?): void {
+            var url = apiBaseUrl + "event/tags";
+            ajaxGet(url, onSuccess, onError)
+        },
+        addTag: function (key: string, onSuccess?, onError?): void {
+            var url = apiBaseUrl + "event/tag/new/" + key;
             var data = {};
             ajaxPost(url, data, onSuccess, onError);
         }

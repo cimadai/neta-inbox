@@ -1,0 +1,4 @@
+@import tags._
+@import views.support.ViewSupport._
+@(paramName: String, label: String, field: Field, labelBaseWidth: Int = 3, cssClass: String = "col-sm-4", disableAutoComplete: Boolean = false)(implicit m: Messages)
+@form_group_input_base("text", paramName, label, field, labelBaseWidth, cssClass, disableAutoComplete)
