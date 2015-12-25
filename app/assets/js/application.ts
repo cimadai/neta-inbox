@@ -27,6 +27,15 @@ $(function () {
         });
     }
 
+    $(".sidebar-search").on("keydown", function (ev) {
+        if (ev.keyCode == 13) {
+            ev.preventDefault();
+            Api.Event.searchEvent($(this).find("input").val());
+        }
+    }).end().filter(".btn").on("click", function () {
+        Api.Event.searchEvent($(this).parent().siblings("input").val());
+    });
+
     $(".event-reaction").click(function (e) {
         e.preventDefault();
         var $btn = $(this);
@@ -36,8 +45,8 @@ $(function () {
             $.each(json.reactions, function (idx, reaction) {
                 var user = reaction.userInfo;
                 $reactionsArea.append($("<img>").attr({
-                    width: "16px",
-                    height: "16px",
+                    width: "24px",
+                    height: "24px",
                     src: user.picture,
                     title: user.fullName
                 })).append("\n");
@@ -52,6 +61,7 @@ $(function () {
     function resetTagSource(callback?: ()=>void) {
         Api.EventTag.getAllTags(function (json) {
             allTags = json.tags;
+            console.log(allTags);
             $.each(allTags, function(i, tag) { tagMap[tag.text] = tag.id; });
             $eventTag
                 .typeahead("destroy")
@@ -78,8 +88,7 @@ $(function () {
     });
     var selected = [];
     (function lookupSelectedTags() {
-        $(".tag-label").each(function (idx, elem) {
-            console.log($.trim($(elem).text()));
+        $(".event-tag-container .tag-label").each(function (idx, elem) {
             selected.push($.trim($(elem).text()));
         });
     }());

@@ -1,9 +1,8 @@
-$icon-font-path: './fonts/bootstrap/';
-@import 'bootstrap-sprockets';
+$icon-font-path: '../fonts/bootstrap/';
 @import 'bootstrap';
-@import 'bootstrap/typeahead.css';
+@import "typeahead.css";
 
-.input-group .input-group-btn .btn {
+.sidebar-search .input-group-btn .btn {
   height: 34px;
 }
 
@@ -21,28 +20,34 @@ $tag-margin: 0.5em;
   }
 }
 
-.form-group input[type='checkbox'] {
-  display: none;
-}
+.form-group {
+  input[type="checkbox"] {
+    display: none;
+  }
 
-.form-group input[type='checkbox'] + .btn-group > label span {
-  width: 20px;
-}
+  input[type="checkbox"] + .btn-group > label {
+    height: 33px;
+  }
 
-.form-group input[type='checkbox'] + .btn-group > label span:first-child {
-  display: none;
-}
+  input[type="checkbox"] + .btn-group > label div {
+    display: inline-block;
+    width: 26px;
+  }
+  input[type="checkbox"] + .btn-group > label div:first-child {
+    display: none;
+  }
 
-.form-group input[type='checkbox'] + .btn-group > label span:last-child {
-  display: inline-block;
-}
+  input[type="checkbox"] + .btn-group > label div:last-child {
+    display: inline-block;
+  }
 
-.form-group input[type='checkbox']:checked + .btn-group > label span:first-child {
-  display: inline-block;
-}
+  input[type="checkbox"]:checked + .btn-group > label div:first-child {
+    display: inline-block;
+  }
 
-.form-group input[type='checkbox']:checked + .btn-group > label span:last-child {
-  display: none;
+  input[type="checkbox"]:checked + .btn-group > label div:last-child {
+    display: none;
+  }
 }
 
 .checkbox-btn {

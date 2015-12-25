@@ -11,6 +11,10 @@ namespace Alice.ApiFacade {
             var url = apiBaseUrl + "event/" + eventId + "/" + reactionTypeId;
             var data = {};
             ajaxPost(url, data, onSuccess, onError);
+        },
+        searchEvent: function (query: string): void {
+            var url = baseUrl + "event/list/search?q=" + query;
+            redirect(url);
         }
     };
     export var EventTag = {

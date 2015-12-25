@@ -24,8 +24,8 @@
             @form_group_hidden("status", form("status"))
 
             @form_basic("tag", Messages("event.tag"), form("tags"), 3, "col-sm-4") {
+                <input type="text" class="input form-control event-tag-typeahead" />
                 <div class="event-tag-container">
-                    <input type="text" class="input form-control event-tag-typeahead" />
                     @for(tag <- tags) {
                         <span class="tag-label label label-default">
                             @{tag.text}

@@ -1,12 +1,17 @@
 @import tags._
-@(eventTagGroupsList: Iterable[EventTagGroups])(implicit m: Messages)
+@(eventTagGroupsList: Iterable[EventTagGroups], searchTagOrNone: Option[EventTag])(implicit m: Messages)
 
 <li class="tag-cloud">
     <div class="input-group">
         @for(eventTagGroups <- eventTagGroupsList) {
             @defining({
+                val labelClass = if (searchTagOrNone.contains(eventTagGroups.tag)) {
+                    "label label-info tag-label"
+                } else {
+                    "label label-default tag-label"
+                }
                 <a href={controllers.member.page.routes.EventPage.listSearch(eventTagGroups.tag.text).toString}>
-                    <span class="label label-default tag-label">{eventTagGroups.tag.text}</span>
+                    <span class={labelClass}>{eventTagGroups.tag.text}</span>
                 </a>
             }){content =>
                 @if(eventTagGroups.eventCount < 2) {

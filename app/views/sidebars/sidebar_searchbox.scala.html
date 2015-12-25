@@ -1,8 +1,7 @@
-@()(implicit m: Messages)
-
+@(queryOrNone: Option[String])(implicit m: Messages)
 <li class="sidebar-search">
     <div class="input-group">
-        <input type="text" class="form-control" placeholder="Search...">
+        <input type="text" class="form-control" placeholder="Search..." value="@{queryOrNone.getOrElse("")}">
         <span class="input-group-btn">
             <button class="btn btn-default" type="button">
                 <i class="fa fa-search"></i>
