@@ -16,15 +16,20 @@ trait AuthenticateUtil extends BaseController {
       } map { profile =>
         f(request)
       }).orElse {
-        Some(Redirect(controllers.nonmember.page.routes.PublicPage.index()))
+        Some(Redirect(controllers.nonmember.page.routes.PublicPage.index())
+          .withCookies(Cookie(AuthenticateUtil.LAST_URI_COOKIE, request.uri, Some(3600 * 24 * 7)))
+        )
       }.get
     }
   }
 
   // AuthenticatedActionなメソッドからは取得可能
   protected def getUserInfoOrNone(implicit request: Request[AnyContent]): Option[UserInfo] = {
-    val idToken = request.session.get("idToken").get
-    Cache.getAs[UserInfo](idToken + "profile")
+    request.session.get("idToken").flatMap(idToken => Cache.getAs[UserInfo](idToken + "profile"))
   }
 
+}
+
+object AuthenticateUtil {
+  val LAST_URI_COOKIE = "last.url.cookie"
 }

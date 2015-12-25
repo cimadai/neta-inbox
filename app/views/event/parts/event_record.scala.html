@@ -15,7 +15,7 @@
         </span>
         <div class="reactions">
         @for(reaction <- reactions){ @reaction.userInfoOrNone match {
-            case Some(user) => {<img width="16px" height="16px" src="@{user.picture}" title="@{user.fullName}" />}
+            case Some(user) => {<img width="24px" height="24px" src="@{user.picture}" title="@{user.fullName}" />}
             case None => {}
         }}
         </div>

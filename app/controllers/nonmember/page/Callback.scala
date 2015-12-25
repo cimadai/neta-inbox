@@ -1,6 +1,7 @@
 package controllers.nonmember.page
 
 import controllers.BaseController
+import controllers.utils.AuthenticateUtil
 import dao.UserInfoDao
 import helpers.Auth0Config
 import play.api.Play
@@ -10,7 +11,7 @@ import play.api.http.{HeaderNames, MimeTypes}
 import play.api.libs.json.Json.toJsFieldJsValueWrapper
 import play.api.libs.json.{JsValue, Json}
 import play.api.libs.ws.WS
-import play.api.mvc.Action
+import play.api.mvc.{DiscardingCookie, Action}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -18,7 +19,7 @@ import scala.concurrent.Future
 object Callback extends BaseController {
 
   // callback route
-  def callback(codeOpt: Option[String] = None, stateOpt: Option[String] = None) = Action.async {
+  def callback(codeOpt: Option[String] = None, stateOpt: Option[String] = None) = Action.async { request =>
     (for {
       code <- codeOpt
       state <- stateOpt
@@ -31,11 +32,23 @@ object Callback extends BaseController {
               case Some(userInfo) =>
                 // Cache the user and tokens into cache and session respectively
                 Cache.set(idToken+ "profile", userInfo)
-                Redirect(controllers.member.page.routes.EventPage.listAll())
-                  .withSession(
-                    "idToken" -> idToken,
-                    "accessToken" -> accessToken
-                  )
+
+                request.cookies.get(AuthenticateUtil.LAST_URI_COOKIE) match {
+                  case Some(cookie) =>
+                    Redirect(cookie.value)
+                      .discardingCookies(DiscardingCookie(AuthenticateUtil.LAST_URI_COOKIE))
+                      .withSession(
+                        "idToken" -> idToken,
+                        "accessToken" -> accessToken
+                      )
+                  case None =>
+                    Redirect(controllers.member.page.routes.EventPage.listAll())
+                      .withSession(
+                        "idToken" -> idToken,
+                        "accessToken" -> accessToken
+                      )
+                }
+
               case None =>
                 // 取得できなかったらダメ
                 Redirect(controllers.nonmember.page.routes.PublicPage.logout())

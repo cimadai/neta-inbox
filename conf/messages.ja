@@ -1,4 +1,6 @@
 title.application = ネタ募集箱（仮）
+title.event = ネタリスト
+title.event.edit = ネタ編集
 
 general.operate = 操作
 general.create = 作成
