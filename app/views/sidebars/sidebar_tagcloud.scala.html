@@ -1,0 +1,26 @@
+@import tags._
+@(eventTagGroupsList: Iterable[EventTagGroups])(implicit m: Messages)
+
+<li class="tag-cloud">
+    <div class="input-group">
+        @for(eventTagGroups <- eventTagGroupsList) {
+            @defining({
+                <a href={controllers.member.page.routes.EventPage.listSearch(eventTagGroups.tag.text).toString}>
+                    <span class="label label-default tag-label">{eventTagGroups.tag.text}</span>
+                </a>
+            }){content =>
+                @if(eventTagGroups.eventCount < 2) {
+                    @enclose_tag("h5") { @content }
+                } else { @if(eventTagGroups.eventCount < 3) {
+                    @enclose_tag("h4") { @content }
+                } else { @if(eventTagGroups.eventCount < 4) {
+                    @enclose_tag("h3") { @content }
+                } else { @if(eventTagGroups.eventCount < 5) {
+                    @enclose_tag("h2") { @content }
+                } else { @if(eventTagGroups.eventCount >= 5) {
+                    @enclose_tag("h1") { @content }
+                }}}}}
+            }
+        }
+    </div>
+</li>

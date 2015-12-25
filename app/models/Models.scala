@@ -74,3 +74,4 @@ object EventInfoForForm {
     EventInfoForForm(ev.id, ev.eventType, ev.title, ev.description, ev.authorIdOrNone, ev.publishDateUnixMillis, ev.status, List.empty, registerMe)
   }
 }
+case class EventTagGroups(tag: EventTag, eventCount: Int)

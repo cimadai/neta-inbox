@@ -1,19 +1,19 @@
-@(flash: Flash, title: String, userInfoOrNone: Option[UserInfo], scripts: Html)(content: Html)(implicit m: Messages)
+@(flash: Flash, title: String, userInfoOrNone: Option[UserInfo], sidebarContents: Iterable[Html], scripts: Html)(content: Html)(implicit m: Messages)
 
-<!DOCTYPE html>
+<!DOCTYPE>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>@title</title>
 	<base href="@controllers.nonmember.page.routes.PublicPage.index">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<link rel="stylesheet" media="screen" href="@routes.Assets.at("css/bootstrap.min.css")">
-	<link rel="stylesheet" media="screen" href="@routes.Assets.at("css/bootstrap-theme.min.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/font-awesome.min.css")">
-	<link rel="stylesheet" media="screen" href="@routes.Assets.at("css/animate.min.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/sb-admin-2.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/bootstrap-datetimepicker.min.css")">
-    <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/main.css")">
+	<link rel="stylesheet" href="@routes.Assets.at("css/animate.min.css")">
+    <link rel="stylesheet" href="@routes.Assets.at("css/bootstrap-datetimepicker.min.css")">
+    <link rel="stylesheet" href="@routes.Assets.at("css/main.css")">
+    <link rel="stylesheet" href="@routes.Assets.at("css/sb-admin-2.css")">
+    <link rel="stylesheet" href="@routes.Assets.at("css/font-awesome.min.css")">
 
 	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
     <script src="@controllers.nonmember.page.routes.PublicPage.messages" type="text/javascript"></script>
@@ -71,17 +71,9 @@
             <div class="navbar-default sidebar" role="navigation">
                 <div class="sidebar-nav navbar-collapse">
                     <ul class="nav" id="side-menu">
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                    <button class="btn btn-default" type="button">
-                                        <i class="fa fa-search"></i>
-                                    </button>
-                                </span>
-                            </div>
-                                <!-- /input-group -->
-                        </li>
+                        @for(sidebarContent <- sidebarContents) {
+                            @sidebarContent
+                        }
                     </ul>
                 </div>
                     <!-- /.sidebar-collapse -->
