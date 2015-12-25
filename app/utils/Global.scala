@@ -30,48 +30,68 @@ object Global extends GlobalSettings {
       Await.result(f0, Duration.Inf)
     }
 
+    def createUser(email: String, familyName: String, givenName: String, nickName: String, picture: String): UserInfo = {
+      val user = UserInfo(None, email, familyName, givenName, familyName + givenName, nickName, picture, "ja")
+      val userId = UserInfoDao.create(user).get
+      user.copy(id = Some(userId))
+    }
+    def createTag(tagName: String): EventTag = {
+      val tag = EventTag(None, tagName)
+      val tagId = EventTagDao.create(tag).get
+      tag.copy(id = Some(tagId))
+    }
+    def createEvent(title: String, description: String, userOrNone: Option[UserInfo], tags: Iterable[EventTag]): EventInfo = {
+      val event = EventInfo(None, EventType.Require, title, description, userOrNone.flatMap(_.id), 0, EventStatus.New)
+      val eventId = EventInfoDao.create(event).get
+
+      tags.foreach(tag => {
+        EventTagRelationDao.create(EventTagRelation(eventId, tag.id.get))
+      })
+      event.copy(id = Some(eventId))
+    }
+
+    def createEventReaction(user: UserInfo, ev: EventInfo, reactionTypeId: Long): Unit = {
+      EventReactionDao.create(EventReaction(None, user.id.get, ev.id.get, reactionTypeId))
+    }
+
     def setupData(): Unit = {
-      val user1 = UserInfo(None, "dice.k1984@gmail.com", "嶋田", "大輔", "嶋田大輔", "daisuke-shimada", "https://lh5.googleusercontent.com/-t_SSgdNb9LM/AAAAAAAAAAI/AAAAAAAAAAA/5sUlkQ-eH6g/photo.jpg", "ja")
-      val user1Id = UserInfoDao.create(user1).get
+      val user1 = createUser("dice.k1984@gmail.com", "嶋田", "大輔", "daisuke-shimada", "https://lh5.googleusercontent.com/-t_SSgdNb9LM/AAAAAAAAAAI/AAAAAAAAAAA/5sUlkQ-eH6g/photo.jpg")
+      val user2 = createUser("test@gmail.com", "te", "st", "test", "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg")
 
-      val user2 = UserInfo(None, "test@gmail.com", "te", "st", "test", "test", "https://lh3.googleusercontent.com/-XdUIqdMkCWA/AAAAAAAAAAI/AAAAAAAAAAA/4252rscbv5M/photo.jpg", "ja")
-      val user2Id = UserInfoDao.create(user2).get
+      val tagScala = createTag("Scala")
+      val tagJavaScript = createTag("JavaScript")
+      val tagPlayFramework = createTag("PlayFramework")
+      val tagTypeScript = createTag("TypeScript")
+      val tagScss = createTag("SCSS")
+      val tagIntellij = createTag("Intellij IDEA")
+      val tagUnity = createTag("Unity")
+      val tagCsharp = createTag("C#")
+      val tagGo = createTag("Go")
+      val tagPhp = createTag("PHP")
+      val tagLaravel = createTag("Laravel")
+      val tagHasunoha = createTag("Hasunoha")
 
-      val event1 = EventInfo(None, EventType.Require, "10分でわかるUnityゴリゴリ3Dプログラミング", "Unityを使った3Dグリングリンなゲームの作り方を10分で解説します。", Some(user2Id), 0, EventStatus.New)
-      val event1Id = EventInfoDao.create(event1).get
-
-      val event2 = EventInfo(None, EventType.Require, "エンジニアが本気でやる3分クッキング", "てすと。", None, 0, EventStatus.New)
-      val event2Id = EventInfoDao.create(event2).get
-
-      val event3 = EventInfo(None, EventType.Require, "ネタ募集箱を支える技術", "このネタ募集箱に使われている技術をご紹介します。", Some(user1Id), 0, EventStatus.New)
-      val event3Id = EventInfoDao.create(event3).get
+      val ev1 = createEvent("10分でわかるUnityゴリゴリ3Dプログラミング", "Unityを使った3Dグリングリンなゲームの作り方を10分で解説します。", Some(user2), Iterable(tagUnity, tagScala, tagJavaScript, tagPlayFramework))
+      val ev2 = createEvent("エンジニアが本気でやる3分クッキング", "てすと。", None, Iterable(tagScala))
+      val ev3 = createEvent("ネタ募集箱を支える技術", "このネタ募集箱に使われている技術をご紹介します。", Some(user1), Iterable(tagScala, tagJavaScript, tagPlayFramework, tagTypeScript, tagScss, tagIntellij))
+      val ev4 = createEvent("UnityとVuforiaではじめるAR", "", Some(user2), Iterable(tagUnity, tagCsharp))
+      val ev5 = createEvent("Unityもくもく会", "", None, Iterable(tagUnity, tagCsharp))
+      val ev6 = createEvent("Go conference in Altplus", "", None, Iterable(tagGo))
+      val ev7 = createEvent("Unity for expert", "", Some(user2), Iterable(tagUnity, tagCsharp))
+      val ev8 = createEvent("Unity for beginner", "", Some(user2), Iterable(tagUnity))
+      val ev9 = createEvent("はじめてのLaravel", "", Some(user2), Iterable(tagPhp, tagLaravel))
+      val ev10 = createEvent("実践 Laravel", "", Some(user2), Iterable(tagPhp, tagLaravel))
+      val ev11 = createEvent("はすのは・やってみよう", "", Some(user2), Iterable(tagPhp, tagHasunoha))
 
       val reactionTypeId = EventReactionTypeDao.create(EventReactionType(None, "聞きたい！")).get
 
-      val tagScala = EventTagDao.create(EventTag(None, "Scala")).get
-      val tagJavaScript = EventTagDao.create(EventTag(None, "JavaScript")).get
-      val tagPlayFramework = EventTagDao.create(EventTag(None, "PlayFramework")).get
-      val tagTypeScript = EventTagDao.create(EventTag(None, "TypeScript")).get
-      val tagScss = EventTagDao.create(EventTag(None, "SCSS")).get
-      val tagIntellij = EventTagDao.create(EventTag(None, "Intellij IDEA")).get
+      createEventReaction(user1, ev1, reactionTypeId)
+      createEventReaction(user2, ev1, reactionTypeId)
 
-      EventReactionDao.create(EventReaction(None, user1Id, event1Id, reactionTypeId))
-      EventReactionDao.create(EventReaction(None, user2Id, event1Id, reactionTypeId))
+      createEventReaction(user1, ev3, reactionTypeId)
+      createEventReaction(user2, ev3, reactionTypeId)
 
-      EventReactionDao.create(EventReaction(None, user1Id, event3Id, reactionTypeId))
-      EventReactionDao.create(EventReaction(None, user2Id, event3Id, reactionTypeId))
-
-      EventTagRelationDao.create(EventTagRelation(event1Id, tagScala))
-      EventTagRelationDao.create(EventTagRelation(event1Id, tagJavaScript))
-      EventTagRelationDao.create(EventTagRelation(event1Id, tagPlayFramework))
-
-      EventTagRelationDao.create(EventTagRelation(event3Id, tagScala))
-      EventTagRelationDao.create(EventTagRelation(event3Id, tagJavaScript))
-      EventTagRelationDao.create(EventTagRelation(event3Id, tagPlayFramework))
-      EventTagRelationDao.create(EventTagRelation(event3Id, tagTypeScript))
-      EventTagRelationDao.create(EventTagRelation(event3Id, tagScss))
-      EventTagRelationDao.create(EventTagRelation(event3Id, tagIntellij))
-
+      createEventReaction(user1, ev5, reactionTypeId)
     }
     createTables()
     setupData()

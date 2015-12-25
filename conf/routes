@@ -11,7 +11,7 @@ GET         /logout                                    controllers.nonmember.pag
 GET         /event/list/all                            controllers.member.page.EventPage.listAll(page: Int ?= 1, size: Int ?= 10)
 GET         /event/list/assigned                       controllers.member.page.EventPage.listAssigned(page: Int ?= 1, size: Int ?= 10)
 GET         /event/list/noassigned                     controllers.member.page.EventPage.listNotAssigned(page: Int ?= 1, size: Int ?= 10)
-GET         /event/list/search                         controllers.member.page.EventPage.listSearch(tag: String, page: Int ?= 1, size: Int ?= 10)
+GET         /event/list/search                         controllers.member.page.EventPage.listSearch(tag: String ?= "", q: String ?= "", page: Int ?= 1, size: Int ?= 10)
 GET         /event/:eventId/edit                       controllers.member.page.EventPage.edit(eventId: Long)
 GET         /event/create                              controllers.member.page.EventPage.create
 POST        /event                                     controllers.member.page.EventPage.postData

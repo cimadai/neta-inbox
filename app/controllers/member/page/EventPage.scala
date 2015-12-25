@@ -17,7 +17,7 @@ object EventPage extends AuthenticateUtil {
 
   object ListType extends Enumeration { val All, Assigned, NotAssigned = Value }
 
-  private def getList(page: Int, size: Int, listType: ListType.Value, searchTagOrNone: Option[EventTag] = None)(implicit request: Request[AnyContent]): Result = {
+  private def getList(page: Int, size: Int, listType: ListType.Value, searchTagOrNone: Option[EventTag] = None, queryOrNone: Option[String] = None)(implicit request: Request[AnyContent]): Result = {
     val (events, numPages) = listType match {
       case ListType.All =>
         searchTagOrNone match {
@@ -27,9 +27,16 @@ object EventPage extends AuthenticateUtil {
             val numPages = EventInfoDao.numPagesByFilter(_.id inSet eventIds)(size)
             (pages, numPages)
           case _ =>
-            val pages = EventInfoDao.getPagination(page, size)
-            val numPages = EventInfoDao.numPages(size)
-            (pages, numPages)
+            queryOrNone match {
+              case Some(query) =>
+                val pages = EventInfoDao.getPaginationByFilter(ev => ev.title.toUpperCase like s"%${query.toUpperCase}%")(page, size)
+                val numPages = EventInfoDao.numPagesByFilter(ev => ev.title.toUpperCase like s"%${query.toUpperCase}%")(size)
+                (pages, numPages)
+              case _ =>
+                val pages = EventInfoDao.getPagination(page, size)
+                val numPages = EventInfoDao.numPages(size)
+                (pages, numPages)
+            }
         }
       case ListType.Assigned =>
         val pages = EventInfoDao.getPaginationByFilter(_.userInfoIdOrNone.isDefined)(page, size)
@@ -52,7 +59,7 @@ object EventPage extends AuthenticateUtil {
     val notAssignedNum = EventInfoDao.getSizeOfUserNotAssigned()
 
     // val userInfo = UserInfoDao.findById(1).get
-    Ok(views.html.event.list(request.flash, getUserInfoOrNone, eventWithReactions, assignedNum, notAssignedNum)(page, size, numPages))
+    Ok(views.html.event.list(request.flash, getUserInfoOrNone, eventWithReactions, assignedNum, notAssignedNum, searchTagOrNone, queryOrNone)(page, size, numPages))
   }
 
   def listAll(page: Int, size: Int) = Action { implicit request =>
@@ -67,12 +74,20 @@ object EventPage extends AuthenticateUtil {
     getList(page, size, ListType.NotAssigned)
   }
 
-  def listSearch(tag: String, page: Int, size: Int) = Action { implicit request =>
-    EventTagDao.findByTagName(tag) match {
-      case Some(eventTag) =>
-        getList(page, size, ListType.All, Some(eventTag))
-      case _ =>
-        Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0)(page, size, 0))
+  def listSearch(tag: String, query: String, page: Int, size: Int) = Action { implicit request =>
+    if (!tag.isEmpty) {
+      EventTagDao.findByTagName(tag) match {
+        case Some(eventTag) =>
+          getList(page, size, ListType.All, Some(eventTag))
+        case _ =>
+          Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0, None, Some(query))(page, size, 0))
+      }
+    } else {
+      if (!query.isEmpty) {
+        getList(page, size, ListType.All, None, Some(query))
+      } else {
+        Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0, None, Some(query))(page, size, 0))
+      }
     }
   }
 
