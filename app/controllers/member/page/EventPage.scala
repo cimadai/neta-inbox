@@ -4,25 +4,33 @@ import controllers.utils.AuthenticateUtil
 import controllers.validator.CustomConstraints
 import dao.utils.DatabaseAccessor
 import DatabaseAccessor.jdbcProfile.api._
-import dao.{EventTagRelationDao, EventInfoDao, EventReactionDao, UserInfoDao}
+import dao._
 import models._
 import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, Request, Result}
+import play.api.mvc.{Action, AnyContent, Request, Result}
 
 object EventPage extends AuthenticateUtil {
 
   object ListType extends Enumeration { val All, Assigned, NotAssigned = Value }
 
-  private def getList(page: Int, size: Int, listType: ListType.Value)(implicit request: Request[_]): Result = {
+  private def getList(page: Int, size: Int, listType: ListType.Value, searchTagOrNone: Option[EventTag] = None)(implicit request: Request[AnyContent]): Result = {
     val (events, numPages) = listType match {
       case ListType.All =>
-        val pages = EventInfoDao.getPagination(page, size)
-        val numPages = EventInfoDao.numPages(size)
-        (pages, numPages)
+        searchTagOrNone match {
+          case Some(searchTag) =>
+            val eventIds = EventTagRelationDao.findByFilter(_.eventTagId === searchTag.id.get).map(_.eventInfoId)
+            val pages = EventInfoDao.getPaginationByFilter(_.id inSet eventIds)(page, size)
+            val numPages = EventInfoDao.numPagesByFilter(_.id inSet eventIds)(size)
+            (pages, numPages)
+          case _ =>
+            val pages = EventInfoDao.getPagination(page, size)
+            val numPages = EventInfoDao.numPages(size)
+            (pages, numPages)
+        }
       case ListType.Assigned =>
         val pages = EventInfoDao.getPaginationByFilter(_.userInfoIdOrNone.isDefined)(page, size)
         val numPages = EventInfoDao.numPagesByFilter(_.userInfoIdOrNone.isDefined)(size)
@@ -43,13 +51,11 @@ object EventPage extends AuthenticateUtil {
     val assignedNum = EventInfoDao.getSizeOfUserAssigned()
     val notAssignedNum = EventInfoDao.getSizeOfUserNotAssigned()
 
-    val userInfo = UserInfoDao.findById(1).get
-    Ok(views.html.event.list(request.flash, userInfo, eventWithReactions, assignedNum, notAssignedNum)(page, size, numPages))
+    // val userInfo = UserInfoDao.findById(1).get
+    Ok(views.html.event.list(request.flash, getUserInfoOrNone, eventWithReactions, assignedNum, notAssignedNum)(page, size, numPages))
   }
 
-  //def list(page: Int, size: Int) = AuthenticatedAction { implicit request =>
   def listAll(page: Int, size: Int) = Action { implicit request =>
-    // Ok(views.html.Inbox.list(request.flash, getUserInfo, eventWithReactions))
     getList(page, size, ListType.All)
   }
 
@@ -59,6 +65,15 @@ object EventPage extends AuthenticateUtil {
 
   def listNotAssigned(page: Int, size: Int) = Action { implicit request =>
     getList(page, size, ListType.NotAssigned)
+  }
+
+  def listSearch(tag: String, page: Int, size: Int) = Action { implicit request =>
+    EventTagDao.findByTagName(tag) match {
+      case Some(eventTag) =>
+        getList(page, size, ListType.All, Some(eventTag))
+      case _ =>
+        Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0)(page, size, 0))
+    }
   }
 
   val eventForm = Form {
@@ -75,7 +90,7 @@ object EventPage extends AuthenticateUtil {
     )(EventInfoForForm.apply)(EventInfoForForm.unapply)
   }
 
-  def create() = Action { implicit request =>
+  def create() = AuthenticatedAction { implicit request =>
     val newEvent = EventInfoForForm(
       None,
       EventType.None,
@@ -87,24 +102,23 @@ object EventPage extends AuthenticateUtil {
       List.empty,
       registerMe = true
     )
-    val userInfo = UserInfoDao.findById(1).get
     val tags = Iterable.empty
-    Ok(views.html.event.edit(request.flash, userInfo, None, tags, eventForm.fill(newEvent)))
+    Ok(views.html.event.edit(request.flash, getUserInfoOrNone, None, tags, eventForm.fill(newEvent)))
   }
 
-  def edit(eventId: Long) = Action { implicit request =>
-    implicit val userInfo = UserInfoDao.findById(1).get
+  def edit(eventId: Long) = AuthenticatedAction { implicit request =>
+    implicit val userInfo = getUserInfoOrNone.get
     EventInfoDao.findById(eventId) match {
       case Some(eventInfo) =>
         val event = EventInfoForForm(eventInfo)
         val tags = EventTagRelationDao.findTagsByEventInfoId(eventId)
-        Ok(views.html.event.edit(request.flash, userInfo, Some(eventInfo), tags, eventForm.fill(event)))
+        Ok(views.html.event.edit(request.flash, Some(userInfo), Some(eventInfo), tags, eventForm.fill(event)))
       case _ => NotFound("")
     }
   }
 
-  def postData() = Action { implicit request =>
-    val userInfo = UserInfoDao.findById(1).get
+  def postData() = AuthenticatedAction { implicit request =>
+    val userInfo = getUserInfoOrNone.get
     eventForm.bindFromRequest.fold(
       formWithErrors => {
         val maybeEventInfo = formWithErrors("id").value.flatMap(idStr => EventInfoDao.findById(idStr.toLong))
@@ -113,10 +127,9 @@ object EventPage extends AuthenticateUtil {
           case _ => Iterable.empty
         }
         val errForm = formWithErrors.withGlobalError("event.edit.failed")
-        BadRequest(views.html.event.edit(request.flash, userInfo, maybeEventInfo, tags, errForm))
+        BadRequest(views.html.event.edit(request.flash, Some(userInfo), maybeEventInfo, tags, errForm))
       },
       formEventInfo => {
-        formEventInfo.authorIdOrNone
         val newEventInfo = if (formEventInfo.registerMe) {
           formEventInfo.copy(authorIdOrNone = userInfo.id).toEventInfo
         } else {

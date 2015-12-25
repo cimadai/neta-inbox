@@ -5,12 +5,13 @@
 @import controllers.member.page.EventPage
 @import controllers.member
 @import controllers.member
-@(flash: Flash, userInfo: UserInfo, eventInfoWithReactionsList: Iterable[EventInfoWithReaction], assignedNum: Int, notAssignedNum: Int)(page: Int, pageSize: Int, numPages: Int)(implicit m: Messages)
+@(flash: Flash, userInfoOrNone: Option[UserInfo], eventInfoWithReactionsList: Iterable[EventInfoWithReaction], assignedNum: Int, notAssignedNum: Int)(page: Int, pageSize: Int, numPages: Int)(implicit m: Messages)
 
 @title = @{m("title.event")}
+@sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
 @scripts = @{Html("")}
 
-@fluid_main(flash, title, Some(userInfo), scripts) {
+@fluid_main(flash, title, userInfoOrNone, sidebar, scripts) {
     <div class="row">
         @information_panel("panel-primary", "fa-star", assignedNum, m("event.user.assigned"), controllers.member.page.routes.EventPage.listAssigned().url)
         @information_panel("panel-green", "fa-star-o", notAssignedNum, m("event.user.not.assigned"), controllers.member.page.routes.EventPage.listNotAssigned().url)

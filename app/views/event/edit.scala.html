@@ -2,14 +2,15 @@
 @import tags._
 @import event.parts._
 
-@(flash: Flash, userInfo: UserInfo, eventOrNone: Option[EventInfo], tags: Iterable[EventTag], form: Form[EventInfoForForm])(implicit m: Messages)
+@(flash: Flash, userInfoOrNone: Option[UserInfo], eventOrNone: Option[EventInfo], tags: Iterable[EventTag], form: Form[EventInfoForForm])(implicit m: Messages)
 
 @isEdit = @{eventOrNone.isDefined}
 @authorExists = @{eventOrNone.map(_.authorIdOrNone).exists(_.isDefined)}
 @title = @{m("title.event.edit")}
+@sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
 @scripts = @{Html("")}
 
-@fluid_main(flash, title, Some(userInfo), scripts) {
+@fluid_main(flash, title, userInfoOrNone, sidebar, scripts) {
     @form_error(form)
     <div class="row">
         <div class="col-md-12 main-container">

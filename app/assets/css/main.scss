@@ -1,40 +1,47 @@
-@import "bootstrap/typeahead.css";
+$icon-font-path: './fonts/bootstrap/';
+@import 'bootstrap-sprockets';
+@import 'bootstrap';
+@import 'bootstrap/typeahead.css';
+
+.input-group .input-group-btn .btn {
+  height: 34px;
+}
 
 .navbar-static-top {
   margin-bottom: 0;
 }
 
-$tagMargin: 0.5em;
+$tag-margin: 0.5em;
 
 .tag-label {
-  margin-right: $tagMargin;
+  margin-right: $tag-margin;
   i {
-    margin-left: $tagMargin;
+    margin-left: $tag-margin;
     cursor: pointer;
   }
 }
 
-.form-group input[type="checkbox"] {
+.form-group input[type='checkbox'] {
   display: none;
 }
 
-.form-group input[type="checkbox"] + .btn-group > label span {
+.form-group input[type='checkbox'] + .btn-group > label span {
   width: 20px;
 }
 
-.form-group input[type="checkbox"] + .btn-group > label span:first-child {
+.form-group input[type='checkbox'] + .btn-group > label span:first-child {
   display: none;
 }
 
-.form-group input[type="checkbox"] + .btn-group > label span:last-child {
+.form-group input[type='checkbox'] + .btn-group > label span:last-child {
   display: inline-block;
 }
 
-.form-group input[type="checkbox"]:checked + .btn-group > label span:first-child {
+.form-group input[type='checkbox']:checked + .btn-group > label span:first-child {
   display: inline-block;
 }
 
-.form-group input[type="checkbox"]:checked + .btn-group > label span:last-child {
+.form-group input[type='checkbox']:checked + .btn-group > label span:last-child {
   display: none;
 }
 
@@ -60,10 +67,12 @@ $tagMargin: 0.5em;
   .event-operate { width: 6em; }
 }
 
-
-//<th class="event-id">@m("event.id")</th>
-//<th class="event-title">@m("event.title")</th>
-//<th class="event-presenter">@m("event.presenter")</th>
-//<th class="event-date">@m("event.date")</th>
-//<th class="event-tag">@m("event.tag")</th>
-//<th class="event-operate">@m("general.operate")</th>
+.tag-cloud {
+  .input-group { padding: 1em; }
+  h1 { display: inline-block; }
+  h2 { display: inline-block; }
+  h3 { display: inline-block; }
+  h4 { display: inline-block; }
+  h5 { display: inline-block; }
+  h6 { display: inline-block; }
+}

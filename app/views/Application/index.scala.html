@@ -4,6 +4,7 @@
 @(flash: Flash, config: Auth0Config)(implicit m: Messages)
 
 @title = @{m("title.application")}
+@sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(None)}
 @scripts = {
     <script>
 	  var AUTH0_CLIENT_ID = '@config.clientId';
@@ -12,7 +13,7 @@
     </script>
 }
 
-@fluid_main(flash, title, None, scripts) {
+@fluid_main(flash, title, None, sidebar, scripts) {
     <div class="row">
         <div class="col-md-4 main-container">
             <div class="login-box auth0-box before">

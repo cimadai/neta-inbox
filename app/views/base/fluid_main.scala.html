@@ -1,8 +1,8 @@
 @import base. _
 
-@(flash: Flash, title: String, userInfoOrNone: Option[UserInfo] = None, scripts: Html = Html(""))(content: Html)(implicit m: Messages)
+@(flash: Flash, title: String, userInfoOrNone: Option[UserInfo] = None, sidebarContents: Iterable[Html] = Iterable.empty, scripts: Html = Html(""))(content: Html)(implicit m: Messages)
 
-@main(flash, title, userInfoOrNone, scripts) {
+@main(flash, title, userInfoOrNone, sidebarContents, scripts) {
 	<div class="container-fluid">
 	@content
 	</div>

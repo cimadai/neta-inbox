@@ -3,7 +3,7 @@ package dao
 import dao.utils.DaoBase.{EventTagRelationTable, EventTagTable}
 import dao.utils.DatabaseAccessor.jdbcProfile.api._
 import dao.utils.{DaoCRUDWithId, SchemaAccessible, _}
-import models.{EventTagRelation, EventTag}
+import models.{EventTagGroups, EventTagRelation, EventTag}
 import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
 import dao.utils.QueryExtensions._
@@ -27,6 +27,16 @@ object EventTagRelationDao extends DaoCRUD[EventTagRelation, EventTagRelationTab
 
   def findTagsByEventInfoId(eventInfoId: Long)(implicit acc: DatabaseConfig[JdbcProfile]): Iterable[EventTag] = {
     baseQuery.filter(_.eventInfoId === eventInfoId).flatMap(_.eventTag).result.runAndAwait.getOrElse(Iterable.empty)
+  }
+
+  def findTagsCountAsGroupByTag()(implicit acc: DatabaseConfig[JdbcProfile]): Iterable[EventTagGroups] = {
+    baseQuery.groupBy(_.eventTagId).map {
+      case (eventTagId, group) =>
+        (eventTagId, group.length)
+    }.result.runAndAwait.get.map {
+      case (eventTagId, relationCount) =>
+        EventTagGroups(EventTagDao.findById(eventTagId).get, relationCount)
+    }
   }
 }
 

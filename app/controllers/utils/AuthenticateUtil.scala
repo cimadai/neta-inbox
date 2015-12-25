@@ -21,9 +21,10 @@ trait AuthenticateUtil extends BaseController {
     }
   }
 
-  protected def getUserInfo(implicit request: Request[AnyContent]): UserInfo = {
+  // AuthenticatedActionなメソッドからは取得可能
+  protected def getUserInfoOrNone(implicit request: Request[AnyContent]): Option[UserInfo] = {
     val idToken = request.session.get("idToken").get
-    Cache.getAs[UserInfo](idToken + "profile").get
+    Cache.getAs[UserInfo](idToken + "profile")
   }
 
 }

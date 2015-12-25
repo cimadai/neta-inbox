@@ -3,12 +3,14 @@
 @import play.api.libs.json.JsValue
 @import play.api.mvc._
 
-@(flash: Flash, userInfo: UserInfo)(implicit m: Messages)
+@(flash: Flash, userInfoOrNone: Option[UserInfo])(implicit m: Messages)
 
+@userInfo = @{userInfoOrNone.get}
 @title = @{m("title.user")}
+@sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
 @scripts = @{Html("")}
 
-@fluid_main(flash, title, Some(userInfo), scripts) {
+@fluid_main(flash, title, userInfoOrNone, sidebar, scripts) {
     <div class="container">
         <div class="login-page clearfix">
             <div class="logged-in-box auth0-box logged-in">
