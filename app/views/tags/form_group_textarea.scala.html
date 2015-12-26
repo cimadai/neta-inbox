@@ -3,6 +3,8 @@
 
 @(paramName: String, label: String, field: Field, labelBaseWidth: Int = 3, cssClass: String = "col-sm-4")(attrs: (Symbol, String)*)(implicit m: Messages)
 
-@form_basic(paramName, label, field, labelBaseWidth, cssClass) {
-	<textarea class="form-control" name="@{paramName}" id="input_@{paramName}" @ViewSupport.attributes(attrs)>@{field.value.getOrElse("")}</textarea>
+@form_basic(paramName, label, field, labelBaseWidth) {
+	<div class="@cssClass">
+		<textarea class="form-control" name="@{paramName}" id="input_@{paramName}" @ViewSupport.attributes(attrs)>@{field.value.getOrElse("")}</textarea>
+	</div>
 }
