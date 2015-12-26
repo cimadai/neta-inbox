@@ -5,9 +5,11 @@
     <td>@authorOrNoe.map(_.fullName).getOrElse(m("event.no.user"))</td>
     <td>@{views.support.ViewSupport.formatDateTimeOrDefault(ev.publishDateUnixMillis, m("event.date.undefined"))}</td>
     <td>
+        <div class="event-tag-container">
         @for(tag <- tags){
-            <span class="label label-default">@{tag.text}</span>
+            <span class="label label-default tag-label">@{tag.text}</span>
         }
+        </div>
     </td>
     <td>
         <span class="btn btn-info event-reaction" data-event-id="@ev.id" data-reaction-type-id="1"> @m("event.want.to.listen")

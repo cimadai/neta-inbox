@@ -21,12 +21,14 @@
         cal.getTimeInMillis
     }
 }
-@form_basic(paramName, label, field, labelBaseWidth, cssClass) {
-    <div class='input-group datepicker'>
-        <input type="text" class="form-control" name="dp_@{paramName}" id="dp_input_@{paramName}" value="" />
-        <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+@form_basic(paramName, label, field, labelBaseWidth) {
+    <div class="@cssClass">
+        <div class='input-group datepicker'>
+            <input type="text" class="form-control" name="dp_@{paramName}" id="dp_input_@{paramName}" value="" />
+            <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+        </div>
+        <input type="hidden" name="@{paramName}" value="@timestamp" id="input_@paramName">
     </div>
-    <input type="hidden" name="@{paramName}" value="@timestamp" id="input_@paramName">
 }
 <script type="text/javascript">
 $(function () {
