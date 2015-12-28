@@ -36,3 +36,9 @@ event.edit.failed = ネタを更新できませんでした。
 event.create.success = ネタを作成しました。
 
 error.cannot.execute.api = 通信に失敗しました。
+
+constraint.required = 必須項目
+constraint.min = 最小値: {0}
+constraint.max = 最大値: {0}
+constraint.maxLength = 最大文字数: {0}
+constraint.email = Eメールアドレスを入力してください。
