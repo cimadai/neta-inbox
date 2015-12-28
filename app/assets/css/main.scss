@@ -1,11 +1,12 @@
 $icon-font-path: '../fonts/bootstrap/';
 $fa-font-path: '../fonts/font-awesome/';
+
 @import 'bootstrap';
 @import 'font-awesome';
 @import 'bootstrap-datetimepicker.min.css';
 @import 'animate.min.css';
 @import 'typeahead.css';
-@import 'sb-admin-2.css';
+@import 'sb-admin-2';
 
 hr {
   max-width: 50px;

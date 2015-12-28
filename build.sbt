@@ -1,4 +1,4 @@
-name := "aws-price-watch"
+name := "neta-inbox"
 
 version := "0.1.0.0"
 
@@ -23,10 +23,12 @@ lazy val librairies = Seq(
 )
 
 lazy val root = (project in file("."))
-  .enablePlugins(PlayScala)
+  .enablePlugins(PlayScala, SbtWeb)
   .settings(
     scalaVersion := PROJECT_SCALA_VERSION,
     libraryDependencies ++= librairies,
-    sassOptions in Assets ++= Seq("--compass", "-r", "compass")
+    sassOptions in Assets ++= Seq("--compass", "-r", "compass"),
+    TypescriptKeys.sourceRoot := "app/assets/js/",
+    TypescriptKeys.outFile := "app/assets/js/application-all.js",
+    includeFilter in TypescriptKeys.typescript := "app/assets/js/application.ts"
   )
-

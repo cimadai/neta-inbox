@@ -3,6 +3,7 @@
 /// <reference path="./third_party/bootstrap/typeahead.d.ts" />
 /// <reference path="./alice.common.ts" />
 /// <reference path="./alice.api_facade.ts" />
+
 interface Window {
     AUTH0_CLIENT_ID: string;
     AUTH0_DOMAIN: string;
@@ -11,7 +12,6 @@ interface Window {
 
 import A_ = Alice;
 $(function () {
-    var Common = A_.Common;
     var Api = A_.ApiFacade;
 
     if (window.AUTH0_CLIENT_ID) {
@@ -62,7 +62,6 @@ $(function () {
     function resetTagSource(callback?: ()=>void) {
         Api.EventTag.getAllTags(function (json) {
             allTags = json.tags;
-            console.log(allTags);
             $.each(allTags, function(i, tag) { tagMap[tag.text] = tag.id; });
             $eventTag
                 .typeahead("destroy")
