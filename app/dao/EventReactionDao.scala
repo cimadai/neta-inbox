@@ -19,7 +19,7 @@ object EventReactionDao extends DaoCRUDWithId[EventReaction, EventReactionTable]
   override def createDDL = baseQuery.schema.create
 
   def findByEventInfoId(eventInfoId: Long)(implicit acc: DatabaseConfig[JdbcProfile]): Iterable[EventReactionUserAndReactionType] = {
-    findByFilter(_.eventInfoId === eventInfoId).map(reaction => {
+    findByFilterWithSort(_.eventInfoId === eventInfoId)(_.id.desc).map(reaction => {
       val userInfo = UserInfoDao.findFirstByFilter(_.id === reaction.userInfoId)
       val eventReactionType = EventReactionTypeDao.findFirstByFilter(_.id === reaction.eventReactionTypeId)
       EventReactionUserAndReactionType(userInfo, eventReactionType)

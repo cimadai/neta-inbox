@@ -19,7 +19,9 @@ object EventApi extends AuthenticateUtil with JsonResponsible {
             "reactions" -> reactions.map(reaction => Json.toJson(reaction))
           ))
         case _ =>
-          renderJsonError()
+          renderJsonError().withHeaders(
+            "X-AJAX-REDIRECT" -> controllers.nonmember.page.routes.PublicPage.index().url
+          )
       }
     }
   }

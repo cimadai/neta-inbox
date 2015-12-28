@@ -1,12 +1,12 @@
 package dao
 
-import dao.utils.DaoBase.{EventTagRelationTable, EventTagTable}
+import dao.utils.DaoBase.EventTagRelationTable
 import dao.utils.DatabaseAccessor.jdbcProfile.api._
-import dao.utils.{DaoCRUDWithId, SchemaAccessible, _}
-import models.{EventTagGroups, EventTagRelation, EventTag}
+import dao.utils.QueryExtensions._
+import dao.utils.{SchemaAccessible, _}
+import models.{EventTag, EventTagGroups, EventTagRelation}
 import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
-import dao.utils.QueryExtensions._
 
 /**
  * イベントタグ関連情報
@@ -33,7 +33,7 @@ object EventTagRelationDao extends DaoCRUD[EventTagRelation, EventTagRelationTab
     baseQuery.groupBy(_.eventTagId).map {
       case (eventTagId, group) =>
         (eventTagId, group.length)
-    }.result.runAndAwait.get.map {
+    }.sortBy(_._2.desc).result.runAndAwait.get.map {
       case (eventTagId, relationCount) =>
         EventTagGroups(EventTagDao.findById(eventTagId).get, relationCount)
     }

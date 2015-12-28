@@ -40,6 +40,7 @@ $(function () {
         e.preventDefault();
         var $btn = $(this);
         Api.Event.toggleEventReaction($btn.data("eventId"), $btn.data("reactionTypeId"), function (json) {
+            $btn.find(".badge").text(json.reactions.length);
             var $reactionsArea = $btn.siblings(".reactions");
             $reactionsArea.empty();
             $.each(json.reactions, function (idx, reaction) {

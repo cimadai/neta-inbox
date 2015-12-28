@@ -45,7 +45,7 @@ case class EventTagRelation(
 
 // for view
 case class EventReactionUserAndReactionType(userInfoOrNone: Option[UserInfo], eventReactionTypeOrNone: Option[EventReactionType])
-case class EventInfoWithReaction(eventInfo: EventInfo, authorOrNoe: Option[UserInfo], reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag])
+case class EventInfoWithReaction(eventInfo: EventInfo, authorOrNone: Option[UserInfo], reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag])
 case class EventInfoForForm(
   id: Option[Long],
   eventType: EventType,
