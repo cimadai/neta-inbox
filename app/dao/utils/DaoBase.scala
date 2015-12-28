@@ -17,7 +17,6 @@ trait DaoBase {
 }
 
 object DaoBase {
-  /** ==================================================== */
   protected val userInfoQuery = TableQuery[UserInfoTable]
   class UserInfoTable(tag: Tag) extends TableWithId[UserInfo](tag, "USER_INFOS") {
     def email = column[String]("EMAIL")
@@ -33,7 +32,6 @@ object DaoBase {
     def * = (id.?, email, familyName, givenName, fullName, nickname, picture, locale) <> (UserInfo.tupled, UserInfo.unapply)
   }
 
-  /** ==================================================== */
   implicit val eventTypeColumnMap = MappedColumnType.base[EventType, Int](_.value, EventType.valueOf(_).getOrElse(EventType.None) )
   implicit val statusColumnMap = MappedColumnType.base[EventStatus, Int](_.value, EventStatus.valueOf(_).getOrElse(EventStatus.New) )
   protected val eventInfoQuery = TableQuery[EventInfoTable]
@@ -50,7 +48,6 @@ object DaoBase {
     def * = (id.?, eventType, title, description, userInfoIdOrNone, publishDateUnixMillis, status) <> (EventInfo.tupled, EventInfo.unapply)
   }
 
-  /** ==================================================== */
   protected val eventReactionTypeQuery = TableQuery[EventReactionTypeTable]
   class EventReactionTypeTable(tag: Tag) extends TableWithId[EventReactionType](tag, "EVENT_REACTION_TYPES") {
     def text = column[String]("TEXT")
@@ -58,7 +55,6 @@ object DaoBase {
     def * = (id.?, text) <> (EventReactionType.tupled, EventReactionType.unapply)
   }
 
-  /** ==================================================== */
   protected val eventReactionQuery = TableQuery[EventReactionTable]
   class EventReactionTable(tag: Tag) extends TableWithId[EventReaction](tag, "EVENT_REACTIONS") {
     def userInfoId = column[Long]("USER_INFO_ID")
@@ -75,7 +71,6 @@ object DaoBase {
     def * = (id.?, userInfoId, eventInfoId, eventReactionTypeId) <> (EventReaction.tupled, EventReaction.unapply)
   }
 
-  /** ==================================================== */
   protected val eventTagQuery = TableQuery[EventTagTable]
   class EventTagTable(tag: Tag) extends TableWithId[EventTag](tag, "EVENT_TAGS") {
     def text = column[String]("TEXT")
@@ -83,7 +78,6 @@ object DaoBase {
     def * = (id.?, text) <> (EventTag.tupled, EventTag.unapply)
   }
 
-  /** ==================================================== */
   protected val eventTagRelationQuery = TableQuery[EventTagRelationTable]
   class EventTagRelationTable(tag: Tag) extends Table[EventTagRelation](tag, "EVENT_TAG_RELATIONS") {
     def eventInfoId = column[Long]("EVENT_INFO_ID")

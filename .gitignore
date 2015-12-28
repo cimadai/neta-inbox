@@ -2,8 +2,10 @@
 .sass-cache
 application-all.js
 application-all.js.map
+app/assets/js/build
 app/assets/js/*.js
 app/assets/js/*.js.map
+!/app/assets/js/plain/*.js
 
 # Ignore Play! working directory #
 bin/

@@ -24,23 +24,9 @@
 @form_basic(paramName, label, field, labelBaseWidth) {
     <div class="@cssClass">
         <div class='input-group datepicker'>
-            <input type="text" class="form-control" name="dp_@{paramName}" id="dp_input_@{paramName}" value="" />
+            <input type="text" class="datepicker-input form-control" name="dp_@{paramName}" id="dp_input_@{paramName}" data-for="#input_@paramName" value="" />
             <span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
         </div>
         <input type="hidden" name="@{paramName}" value="@timestamp" id="input_@paramName">
     </div>
 }
-<script type="text/javascript">
-$(function () {
-    var $hidden = $("#input_@paramName");
-    $('.datepicker')
-        .datetimepicker({
-            format: "YYYY/MM/DD HH:mm",
-            sideBySide: true,
-            defaultDate: new Date("@{views.support.ViewSupport.formatDateTimeOrDefault(timestamp, "")}")
-        })
-        .on("dp.change", function (ev) {
-            $hidden.val(ev.date ? ev.date.unix() * 1000 : 0);
-        });
-});
-</script>

@@ -8,3 +8,4 @@ addSbtPlugin("default" % "sbt-sass" % "0.1.9")
 
 addSbtPlugin("com.arpnetworking" % "sbt-typescript" % "0.1.9")
 
+addSbtPlugin("com.typesafe.sbt" % "sbt-uglify" % "1.0.3")
