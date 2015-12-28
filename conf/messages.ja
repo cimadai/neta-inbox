@@ -34,3 +34,5 @@ event.description.placeholder = ネタに関する概要を入力してくださ
 event.edit.success = ネタを更新しました。
 event.edit.failed = ネタを更新できませんでした。
 event.create.success = ネタを作成しました。
+
+error.cannot.execute.api = 通信に失敗しました。

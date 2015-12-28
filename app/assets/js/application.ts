@@ -1,6 +1,7 @@
 /// <reference path="./third_party/jquery/jquery.d.ts" />
 /// <reference path="./third_party/auth0/auth0.lock.d.ts" />
 /// <reference path="./third_party/bootstrap/typeahead.d.ts" />
+/// <reference path="./third_party/bootstrap/bootstrap.v3.datetimepicker.d.ts" />
 /// <reference path="./alice.common.ts" />
 /// <reference path="./alice.api_facade.ts" />
 
@@ -154,4 +155,16 @@ $(function () {
     }
 
     resetTagSource();
+
+    var $dp =$('.datepicker');
+    var $dpInput = $dp.find(".datepicker-input");
+    var $dpHiddenData = $($dpInput.data("for"));
+    $dp.datetimepicker({
+            format: "YYYY/MM/DD HH:mm",
+            sideBySide: true,
+            defaultDate: new Date(parseInt($dpHiddenData.val()))
+        })
+        .on("dp.change", function (ev) {
+            $dpHiddenData.val(ev.date ? ev.date.unix() * 1000 : 0);
+        });
 });
