@@ -37,7 +37,7 @@ $(function () {
         .datetimepicker({
             format: "YYYY/MM/DD HH:mm",
             sideBySide: true,
-            defaultDate: "@{views.support.ViewSupport.formatDateTimeOrDefault(timestamp, "")}"
+            defaultDate: new Date("@{views.support.ViewSupport.formatDateTimeOrDefault(timestamp, "")}")
         })
         .on("dp.change", function (ev) {
             $hidden.val(ev.date ? ev.date.unix() * 1000 : 0);

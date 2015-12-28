@@ -31,7 +31,7 @@ object EventInfoDao extends DaoCRUDWithId[EventInfo, EventInfoTable] with DaoBas
       case (eventInfoId, group) => (eventInfoId, group.length)
     }
     (eventInfoQuery joinLeft groupedEventReaction on (_.id === _._1)).map {
-      case (eventInfo, reactionsNumOrNone) => (eventInfo, reactionsNumOrNone.flatMap(_._2).getOrElse(0))
+      case (eventInfo, reactionsNumOrNone) => (eventInfo, reactionsNumOrNone.flatMap(_._2.?).getOrElse(0))
     }
   }
 
