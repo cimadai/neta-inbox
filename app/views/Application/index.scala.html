@@ -13,15 +13,20 @@
     </script>
 }
 
-@fluid_main(flash, title, None, sidebar, scripts) {
-    <div class="row">
-        <div class="col-md-4 main-container">
-            <div class="login-box auth0-box before">
-                <a class="btn btn-primary btn-lg btn-login btn-block">SignIn</a>
+@plain_base(flash, title, scripts) {
+    <header>
+        <div class="header-content">
+            <div class="header-content-inner">
+                <h1>@m("login.title")</h1>
+                <hr>
+                <p>@m("login.message1")</p>
+                <p>@m("login.message2")</p>
+                <div class="login-box auth0-box before">
+                    <a class="btn btn-primary btn-xl btn-login">Log in</a>
+                </div>
             </div>
         </div>
-    </div>
+    </header>
 
 }
-
 

@@ -10,6 +10,7 @@ import play.api.mvc._
 trait AuthenticateUtil extends BaseController {
 
   def AuthenticatedAction(f: Request[AnyContent] => Result): Action[AnyContent] = {
+//    Action { request => f(request) }
     Action { request =>
       (request.session.get("idToken").flatMap { idToken =>
         Cache.getAs[UserInfo](idToken + "profile")
@@ -25,7 +26,8 @@ trait AuthenticateUtil extends BaseController {
 
   // AuthenticatedActionなメソッドからは取得可能
   protected def getUserInfoOrNone(implicit request: Request[AnyContent]): Option[UserInfo] = {
-    request.session.get("idToken").flatMap(idToken => Cache.getAs[UserInfo](idToken + "profile"))
+//    UserInfoDao.findById(1)
+     request.session.get("idToken").flatMap(idToken => Cache.getAs[UserInfo](idToken + "profile"))
   }
 
 }

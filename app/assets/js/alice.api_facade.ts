@@ -41,7 +41,11 @@ namespace Alice.ApiFacade {
     };
 
     var createSuccessProxy = function (callback) {
-        return function (data) {
+        return function (data, status, xhr) {
+            var redirectUrl = xhr.getResponseHeader("X-AJAX-REDIRECT");
+            if (redirectUrl) {
+                redirect(redirectUrl);
+            }
             var pushGrowl = true;
             if (callback) {
                 var ret = callback(data);

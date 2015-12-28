@@ -23,32 +23,23 @@ object EventPage extends AuthenticateUtil {
         searchTagOrNone match {
           case Some(searchTag) =>
             val eventIds = EventTagRelationDao.findByFilter(_.eventTagId === searchTag.id.get).map(_.eventInfoId)
-            val pages = EventInfoDao.getPaginationByFilter(_.id inSet eventIds)(page, size)
-            val numPages = EventInfoDao.numPagesByFilter(_.id inSet eventIds)(size)
-            (pages, numPages)
+            EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.id inSet eventIds)(page, size)
           case _ =>
             queryOrNone match {
               case Some(query) =>
-                val pages = EventInfoDao.getPaginationByFilter(ev => ev.title.toUpperCase like s"%${query.toUpperCase}%")(page, size)
-                val numPages = EventInfoDao.numPagesByFilter(ev => ev.title.toUpperCase like s"%${query.toUpperCase}%")(size)
-                (pages, numPages)
+                EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.title.toUpperCase like s"%${query.toUpperCase}%")(page, size)
               case _ =>
-                val pages = EventInfoDao.getPagination(page, size)
-                val numPages = EventInfoDao.numPages(size)
-                (pages, numPages)
+                EventInfoDao.getPaginationAndNumPagesWithReactionNum(page, size)
             }
         }
       case ListType.Assigned =>
-        val pages = EventInfoDao.getPaginationByFilter(_.userInfoIdOrNone.isDefined)(page, size)
-        val numPages = EventInfoDao.numPagesByFilter(_.userInfoIdOrNone.isDefined)(size)
-        (pages, numPages)
+        EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.userInfoIdOrNone.isDefined)(page, size)
       case ListType.NotAssigned =>
-        val pages = EventInfoDao.getPaginationByFilter(_.userInfoIdOrNone.isEmpty)(page, size)
-        val numPages = EventInfoDao.numPagesByFilter(_.userInfoIdOrNone.isDefined)(size)
-        (pages, numPages)
+        EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.userInfoIdOrNone.isEmpty)(page, size)
     }
 
-    val eventWithReactions = events._1.map({ev =>
+    val eventWithReactions = events.map({eventWithNumReactions =>
+      val ev = eventWithNumReactions._1
       val authorOrNone = ev.authorIdOrNone.flatMap(UserInfoDao.findById)
       val reactions = EventReactionDao.findByEventInfoId(ev.id.get)
       val tags = EventTagRelationDao.findTagsByEventInfoId(ev.id.get)
@@ -58,7 +49,6 @@ object EventPage extends AuthenticateUtil {
     val assignedNum = EventInfoDao.getSizeOfUserAssigned()
     val notAssignedNum = EventInfoDao.getSizeOfUserNotAssigned()
 
-    // val userInfo = UserInfoDao.findById(1).get
     Ok(views.html.event.list(request.flash, getUserInfoOrNone, eventWithReactions, assignedNum, notAssignedNum, searchTagOrNone, queryOrNone)(page, size, numPages))
   }
 
@@ -118,7 +108,7 @@ object EventPage extends AuthenticateUtil {
       registerMe = true
     )
     val tags = Iterable.empty
-    Ok(views.html.event.edit(request.flash, getUserInfoOrNone, None, tags, eventForm.fill(newEvent)))
+    Ok(views.html.event.edit(request.flash, getUserInfoOrNone, None, None, tags, eventForm.fill(newEvent)))
   }
 
   def edit(eventId: Long) = AuthenticatedAction { implicit request =>
@@ -126,8 +116,9 @@ object EventPage extends AuthenticateUtil {
     EventInfoDao.findById(eventId) match {
       case Some(eventInfo) =>
         val event = EventInfoForForm(eventInfo)
+        val authorOrNone = eventInfo.authorIdOrNone.flatMap(UserInfoDao.findById)
         val tags = EventTagRelationDao.findTagsByEventInfoId(eventId)
-        Ok(views.html.event.edit(request.flash, Some(userInfo), Some(eventInfo), tags, eventForm.fill(event)))
+        Ok(views.html.event.edit(request.flash, Some(userInfo), Some(eventInfo), authorOrNone, tags, eventForm.fill(event)))
       case _ => NotFound("")
     }
   }
@@ -137,12 +128,13 @@ object EventPage extends AuthenticateUtil {
     eventForm.bindFromRequest.fold(
       formWithErrors => {
         val maybeEventInfo = formWithErrors("id").value.flatMap(idStr => EventInfoDao.findById(idStr.toLong))
+        val authorOrNone = maybeEventInfo.flatMap(_.authorIdOrNone.flatMap(UserInfoDao.findById))
         val tags = maybeEventInfo match {
           case Some(eventInfo) => EventTagRelationDao.findTagsByEventInfoId(eventInfo.id.get)
           case _ => Iterable.empty
         }
         val errForm = formWithErrors.withGlobalError("event.edit.failed")
-        BadRequest(views.html.event.edit(request.flash, Some(userInfo), maybeEventInfo, tags, errForm))
+        BadRequest(views.html.event.edit(request.flash, Some(userInfo), maybeEventInfo, authorOrNone, tags, errForm))
       },
       formEventInfo => {
         val newEventInfo = if (formEventInfo.registerMe) {

@@ -2,7 +2,11 @@
 <tr @if(authorOrNoe.isEmpty){ class="danger" }>
     <td>@ev.id.get</td>
     <td><a href="@controllers.member.page.routes.EventPage.edit(ev.id.get)">@ev.title</a></td>
-    <td>@authorOrNoe.map(_.fullName).getOrElse(m("event.no.user"))</td>
+    <td>@authorOrNoe.map(user =>
+            Html(<span>
+                <img width="24px" height="24px" src={user.picture} title={user.fullName} /> {user.fullName}
+            </span>.toString)
+    ).getOrElse(m("event.no.user"))</td>
     <td>@{views.support.ViewSupport.formatDateTimeOrDefault(ev.publishDateUnixMillis, m("event.date.undefined"))}</td>
     <td>
         <div class="event-tag-container">

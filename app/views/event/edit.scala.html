@@ -2,10 +2,10 @@
 @import tags._
 @import event.parts._
 
-@(flash: Flash, userInfoOrNone: Option[UserInfo], eventOrNone: Option[EventInfo], tags: Iterable[EventTag], form: Form[EventInfoForForm])(implicit m: Messages)
+@(flash: Flash, userInfoOrNone: Option[UserInfo], eventOrNone: Option[EventInfo], authorOrNone: Option[UserInfo], tags: Iterable[EventTag], form: Form[EventInfoForForm])(implicit m: Messages)
 
 @isEdit = @{eventOrNone.isDefined}
-@authorExists = @{eventOrNone.map(_.authorIdOrNone).exists(_.isDefined)}
+@authorExists = @{authorOrNone.isDefined}
 @title = @{m("title.event.edit")}
 @sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
 @scripts = @{Html("")}
@@ -38,7 +38,16 @@
                 </div>
             }
 
-            @if(!authorExists) { @form_group_checkbox("registerMe", Messages("event.registerMe"), form("registerMe")) }
+            @if(authorExists) {
+                @form_group_html(Messages("event.presenter")) {
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img width="24px" height="24px" src="@{authorOrNone.get.picture}" title="@{authorOrNone.get.fullName}" /> @{authorOrNone.get.fullName}
+                        </div>
+                    </div>
+                }
+            }
+            @form_group_checkbox("registerMe", Messages("event.registerMe"), form("registerMe"))
 
             <div class="form-group">
                 <div class="col-xs-offset-3 col-sm-offset-3 col-md-offset-2 col-lg-offset-2 col-xs-9 col-sm-9 col-md-8 col-lg-8">
