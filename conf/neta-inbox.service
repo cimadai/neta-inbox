@@ -1,0 +1,10 @@
+[Unit]
+Description = neta-inbox daemon
+
+[Service]
+ExecStart = /opt/neta-inbox-0.1.0.0/bin/neta-inbox
+Restart = always
+Type = simple
+
+[Install]
+WantedBy = multi-user.target

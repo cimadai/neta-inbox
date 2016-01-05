@@ -1,8 +1,12 @@
 package utils
 
+import java.util.concurrent.atomic.AtomicReference
+
 import _root_.slick.driver.JdbcProfile
 import dao._
+import helpers.ChatworkConfig
 import models._
+import net.cimadai.chatwork.ChatworkClient
 import org.slf4j.LoggerFactory
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.{Application, GlobalSettings}
@@ -15,6 +19,8 @@ import scala.concurrent.duration.Duration
 
 object Global extends GlobalSettings {
   private val logger = LoggerFactory.getLogger(getClass)
+  private val chatworkClientRef = new AtomicReference[Option[ChatworkClient]](None)
+  def chatworkClient = chatworkClientRef.get()
 
   override def onStart(app: Application): Unit = {
     logger.debug("Play application is starting.")
@@ -22,6 +28,11 @@ object Global extends GlobalSettings {
     if (isFirstLaunch) {
       createTables
       setupData
+    }
+
+    val config = ChatworkConfig.get()
+    if (config.apiKey.nonEmpty) {
+      chatworkClientRef.set(Some(new ChatworkClient(config.apiKey)))
     }
   }
 

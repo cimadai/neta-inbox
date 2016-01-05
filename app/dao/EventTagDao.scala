@@ -1,9 +1,9 @@
 package dao
 
-import dao.utils.DaoBase.{EventTagTable, EventInfoTable}
+import dao.utils.DaoBase.EventTagTable
 import dao.utils.DatabaseAccessor.jdbcProfile.api._
-import dao.utils.{DaoCRUDWithId, DatabaseAccessor, SchemaAccessible, _}
-import models.{EventTag, EventInfo}
+import dao.utils.{DaoCRUDWithId, SchemaAccessible, _}
+import models.EventTag
 import slick.backend.DatabaseConfig
 import slick.driver.JdbcProfile
 

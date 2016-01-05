@@ -1,9 +1,11 @@
 title.application = ネタ募集箱（仮）
 title.event = ネタリスト
 title.event.edit = ネタ編集
+title.event.view = ネタ詳細
 
 general.operate = 操作
 general.create = 作成
+general.edit = 編集
 general.update = 更新
 general.cancel = キャンセル
 general.view.detail = 詳細を見る
@@ -42,3 +44,6 @@ constraint.min = 最小値: {0}
 constraint.max = 最大値: {0}
 constraint.maxLength = 最大文字数: {0}
 constraint.email = Eメールアドレスを入力してください。
+
+message.event.updated = [info][title]ネタが更新されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]
+message.new.event.created = [info][title]新しいネタが登録されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]

@@ -109,19 +109,3 @@ namespace Alice.ApiFacade {
     }
 
 }
-
-
-//class ClassName extends ParentClassName implements InterfaceName {
-//    static classVariable: ClassVariableType;
-//    instanceVariable: InstanceVariableType;
-//
-//    constructor(arg: ArgType) {
-//    }
-//
-//    static method(arg: ArgType): ReturnType {
-//        return returnValue;
-//    }
-//    method(arg: ArgType): ReturnType {
-//        return returnValue;
-//    }
-//}

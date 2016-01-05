@@ -1,10 +1,12 @@
 package controllers.member.page
 
+import _root_.utils.Global
 import controllers.utils.AuthenticateUtil
 import controllers.validator.CustomConstraints
 import dao.utils.DatabaseAccessor
 import DatabaseAccessor.jdbcProfile.api._
 import dao._
+import helpers.ChatworkConfig
 import models._
 import play.api.Play.current
 import play.api.data.Form
@@ -81,6 +83,19 @@ object EventPage extends AuthenticateUtil {
     }
   }
 
+  def view(eventId: Long) = AuthenticatedAction { implicit request =>
+    implicit val userInfo = getUserInfoOrNone.get
+    EventInfoDao.findById(eventId) match {
+      case Some(eventInfo) =>
+        val event = EventInfoForForm(eventInfo)
+        val authorOrNone = eventInfo.authorIdOrNone.flatMap(UserInfoDao.findById)
+        val tags = EventTagRelationDao.findTagsByEventInfoId(eventId)
+        val reactions = EventReactionDao.findByEventInfoId(event.id.get)
+        Ok(views.html.event.view(request.flash, Some(userInfo), eventInfo, reactions, authorOrNone, tags, eventForm.fill(event)))
+      case _ => NotFound("")
+    }
+  }
+
   val eventForm = Form {
     mapping(
       "id" -> optional(longNumber),
@@ -140,7 +155,7 @@ object EventPage extends AuthenticateUtil {
         val newEventInfo = if (formEventInfo.registerMe) {
           formEventInfo.copy(authorIdOrNone = userInfo.id).toEventInfo
         } else {
-          formEventInfo.toEventInfo
+          formEventInfo.copy(authorIdOrNone = None).toEventInfo
         }
         val successMessage = newEventInfo.id match {
           case Some(eventInfoId) =>
@@ -149,6 +164,7 @@ object EventPage extends AuthenticateUtil {
             formEventInfo.tags.foreach(tagId => {
               EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
             })
+            postChatWork("message.event.updated", eventInfoId, newEventInfo)
             Messages("event.edit.success")
           case _ =>
             EventInfoDao.create(newEventInfo) match {
@@ -156,6 +172,8 @@ object EventPage extends AuthenticateUtil {
                 formEventInfo.tags.foreach(tagId => {
                   EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
                 })
+
+                postChatWork("message.new.event.created", eventInfoId, newEventInfo)
                 Messages("event.create.success")
               case _ =>
                 Messages("event.create.failed")
@@ -165,6 +183,18 @@ object EventPage extends AuthenticateUtil {
         Redirect(controllers.member.page.routes.EventPage.listAll()).flashing("success" -> successMessage)
       }
     )
+  }
+
+  private def postChatWork(messageKey: String, eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): Unit = {
+    val author = event.authorIdOrNone.flatMap(UserInfoDao.findById).map(_.fullName).getOrElse(Messages("event.no.user"))
+    val title = event.title
+    val desc = event.description
+    val tags = EventTagRelationDao.findTagsByEventInfoId(eventId).map(_.text).mkString(",")
+    val url = controllers.member.page.routes.EventPage.view(eventId).absoluteURL()
+    val config = ChatworkConfig.get()
+    Global.chatworkClient.foreach(cw => {
+      cw.postRoomMessage(config.roomId, Messages(messageKey, author, title, desc, tags, url))
+    })
   }
 
 }

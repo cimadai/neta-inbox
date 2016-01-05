@@ -5,7 +5,7 @@ object EventType extends AbstractValuedObject[Int, EventType] {
   case object None extends EventType(1)
   case object Presentation extends EventType(2)
   case object Require extends EventType(3)
-  override val elements = Iterable(Presentation, Require)
+  override val elements = Iterable(None, Presentation, Require)
 }
 
 sealed abstract class EventStatus(value: Int) extends ValuedObject(value)
