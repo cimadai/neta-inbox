@@ -38,7 +38,7 @@ object EventInfoDao extends DaoCRUDWithId[EventInfo, EventInfoTable] with DaoBas
   private def getPaginationAndNumPages(query: Query[(EventInfoTable, Rep[Int]), (EventInfo, Int), Seq], pageNum: Int, sizeNum: Int)
       (implicit acc: DatabaseConfig[JdbcProfile]): (Iterable[(EventInfo, Int)], Int) = {
     val page = query
-      .sortBy(_._2.desc)
+      .sortBy(row => (row._2.desc, row._1.publishDateUnixMillis.desc, row._1.id.asc))
       .page(pageNum, sizeNum)
       .result.runAndAwait
       .getOrElse(Iterable.empty[(EventInfo, Int)])

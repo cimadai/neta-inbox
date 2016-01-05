@@ -1,0 +1,66 @@
+@import base._
+@import tags._
+@import views.support.ViewSupport
+
+@(flash: Flash, userInfoOrNone: Option[UserInfo], event: EventInfo, reactions: Iterable[EventReactionUserAndReactionType], authorOrNone: Option[UserInfo], tags: Iterable[EventTag], form: Form[EventInfoForForm])(implicit m: Messages)
+
+@authorExists = @{authorOrNone.isDefined}
+@title = @{m("title.event.view")}
+@sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
+@scripts = @{Html("")}
+
+@fluid_main(flash, title, userInfoOrNone, sidebar, scripts) {
+    @form_error(form)
+
+    <div class="row">
+        <div class="col-md-12">
+            <a href="@controllers.member.page.routes.EventPage.edit(event.id.get)" class="btn btn-default">@m("general.edit")</a>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 main-container">
+        @helper.form(action = controllers.member.page.routes.EventPage.postData(), 'class -> "form-horizontal") {
+            @form_group_static(Messages("event.title"), event.title)
+            @form_group_textarea("description", Messages("event.description"), form("description"), cssClass = "col-sm-6")('rows -> "11", 'readonly -> "true")
+            @form_group_static(Messages("event.date"), ViewSupport.formatDateTimeOrDefault(event.publishDateUnixMillis, m("event.date.undefined")))
+
+            @form_basic("tag", Messages("event.tag"), form("tags"), 3) {
+                <div class="col-sm-8 event-tag-container">
+                    @for(tag <- tags) {
+                        <span class="tag-label label label-default">
+                            @{tag.text}
+                        </span>
+                    }
+                </div>
+            }
+
+            @if(authorExists) {
+                @form_group_html(Messages("event.presenter")) {
+                    <div class="row">
+                        <div class="col-md-4">
+                            <img width="24px" height="24px" src="@{authorOrNone.get.picture}" title="@{authorOrNone.get.fullName}" /> @{authorOrNone.get.fullName}
+                        </div>
+                    </div>
+                }
+            }
+
+            @form_group_html("") {
+                <div class="row">
+                    <div class="col-md-6">
+                        <span class="btn btn-info event-reaction" data-event-id="@event.id" data-reaction-type-id="1"> @m("event.want.to.listen")
+                            <i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<span class="badge">@reactions.size</span>
+                        </span>
+                        <div class="reactions">
+                        @for(reaction <- reactions){ @reaction.userInfoOrNone match {
+                            case Some(user) => {<img width="24px" height="24px" src="@{user.picture}" title="@{user.fullName}" />}
+                            case None => {}
+                        }}
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        </div>
+    </div>
+
+}

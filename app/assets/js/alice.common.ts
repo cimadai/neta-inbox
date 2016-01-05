@@ -10,25 +10,6 @@ namespace Alice.Common {
     }
     export var baseUrl = $("base").attr("href");
 
-    //export var Loading = {
-    //    mask: function ($jqObject) {
-    //        $jqObject = $($jqObject);
-    //        if (!$jqObject.isMasked()) {
-    //            $jqObject.mask("Loading...");
-    //        }
-    //    },
-    //    unmask: function ($jqObject, delay) {
-    //        $jqObject = $($jqObject);
-    //        var delayMsec = parseInt(delay, 10);
-    //        if ($jqObject.isMasked() && delayMsec > 0) {
-    //            setTimeout(function () {
-    //                $jqObject.unmask();
-    //            }, delayMsec);
-    //        } else {
-    //            $jqObject.unmask();
-    //        }
-    //    }
-    //};
     export var Utils = {
         is: function (type, obj) {
             var clas = Object.prototype.toString.call(obj).slice(8, -1);

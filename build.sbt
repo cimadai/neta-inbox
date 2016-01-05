@@ -1,4 +1,3 @@
-import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 
 name := "neta-inbox"
@@ -14,7 +13,6 @@ lazy val librairies = Seq(
   "org.scala-lang" % "scala-reflect" % PROJECT_SCALA_VERSION,
   "org.scala-lang.modules" %% "scala-parser-combinators" % "1.0.4",
   "org.scala-lang.modules" %% "scala-xml" % "1.0.4",
-  "com.google.guava" % "guava" % "16.0.1",
   "junit" % "junit" % "4.12" % "test",
   "org.webjars" %% "webjars-play" % "2.3.0",
   "org.webjars" % "foundation" % "5.3.0",
@@ -22,7 +20,8 @@ lazy val librairies = Seq(
   ws,
   "com.h2database" % "h2" % "1.4.177",
   "com.typesafe.play" %% "play-slick" % "1.0.0",
-  "org.julienrf" %% "play-jsmessages" % "2.0.0"
+  "org.julienrf" %% "play-jsmessages" % "2.0.0",
+  "net.cimadai" %% "chatwork-scala" % "1.0.1"
 )
 
 val preOrder = Iterable("plain/jquery-1.11.3.min.js", "plain/jquery-migrate-1.2.1.min.js", "plain/moment.min.js")
@@ -55,6 +54,7 @@ lazy val root = (project in file("."))
 
     pipelineStages := Seq(uglify),
     UglifyKeys.buildDir := file("app/assets/js/build"),
+    UglifyKeys.compressOptions := Seq("warnings=false"),
     UglifyKeys.uglifyOps := { js => {
       val target = js.filterNot(_._2.contains("js/build")).filterNot(_._2.endsWith(outputFile)).filter(_._1.isFile)
       val (pre, rest) = splitFileList(target, preOrder)

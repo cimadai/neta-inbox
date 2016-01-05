@@ -100,7 +100,7 @@ $(function () {
                 $eventTag.typeahead("val", matched).typeahead("close");
                 selectTag(matched);
             } else if (matches.length == 0) {
-                Api.EventTag.addTag(value, function (json) {
+                Api.EventTag.addTag(value, function () {
                     resetTagSource(function () {
                         selectTag(value);
                     });
@@ -121,6 +121,7 @@ $(function () {
                     value: tagMap[tag]
                 }).addClass("fa fa-close"))
         );
+        $eventTag.filter(".tt-input").focus();
     }
     $eventTag.on("keydown", function (ev) {
         if (ev.keyCode == 13) {
