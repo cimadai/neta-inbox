@@ -3,6 +3,7 @@ package controllers.nonmember.page
 import controllers.utils.AuthenticateUtil
 import helpers.Auth0Config
 import jsmessages.JsMessagesFactory
+import play.api.Play
 import play.api.mvc.Action
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
@@ -22,10 +23,16 @@ object PublicPage extends AuthenticateUtil {
       case Some(userInfo) =>
         Redirect(controllers.member.page.routes.EventPage.listAll())
       case _ =>
-        val callbackUrl = if (request.secure) { s"https://${request.host}/callback" } else { s"http://${request.host}/callback" }
-        val newConfig = Auth0Config.get().copy(callbackURL = callbackUrl)
-        Auth0Config.set(newConfig)
-        Ok(views.html.Application.index(request.flash, newConfig))
+
+        val authConfig = if (Play.isProd) {
+          Auth0Config.get()
+        } else {
+          val callbackUrl = if (request.secure) { s"https://${request.host}/callback" } else { s"http://${request.host}/callback" }
+          val newConfig = Auth0Config.get().copy(callbackURL = callbackUrl)
+          Auth0Config.set(newConfig)
+          newConfig
+        }
+        Ok(views.html.Application.index(request.flash, authConfig))
     }
   }
 

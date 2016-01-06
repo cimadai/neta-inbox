@@ -6,8 +6,9 @@ import controllers.validator.CustomConstraints
 import dao.utils.DatabaseAccessor
 import DatabaseAccessor.jdbcProfile.api._
 import dao._
-import helpers.ChatworkConfig
+import helpers.{Auth0Config, ChatworkConfig}
 import models._
+import play.api.Play
 import play.api.Play.current
 import play.api.data.Form
 import play.api.data.Forms._
@@ -190,7 +191,12 @@ object EventPage extends AuthenticateUtil {
     val title = event.title
     val desc = event.description
     val tags = EventTagRelationDao.findTagsByEventInfoId(eventId).map(_.text).mkString(",")
-    val url = controllers.member.page.routes.EventPage.view(eventId).absoluteURL()
+    val url =
+      if (Play.isProd) {
+        Auth0Config.get().callbackURL.replace("/callback", controllers.member.page.routes.EventPage.view(eventId).url)
+      } else {
+        controllers.member.page.routes.EventPage.view(eventId).absoluteURL()
+      }
     val config = ChatworkConfig.get()
     Global.chatworkClient.foreach(cw => {
       cw.postRoomMessage(config.roomId, Messages(messageKey, author, title, desc, tags, url))
