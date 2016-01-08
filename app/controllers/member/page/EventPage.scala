@@ -6,7 +6,7 @@ import controllers.validator.CustomConstraints
 import dao.utils.DatabaseAccessor
 import DatabaseAccessor.jdbcProfile.api._
 import dao._
-import helpers.{Auth0Config, ChatworkConfig}
+import helpers.{SlackConfig, Auth0Config, ChatworkConfig}
 import models._
 import play.api.Play
 import play.api.Play.current
@@ -19,6 +19,20 @@ import play.api.mvc.{Action, AnyContent, Request, Result}
 object EventPage extends AuthenticateUtil {
 
   object ListType extends Enumeration { val All, Assigned, NotAssigned = Value }
+
+  val eventForm = Form {
+    mapping(
+      "id" -> optional(longNumber),
+      "eventType" -> CustomConstraints.ofEventType,
+      "title" -> text(maxLength = 50),
+      "description" -> text,
+      "authorIdOrNone" -> optional(longNumber),
+      "publishDateUnixMillis" -> longNumber,
+      "status" -> CustomConstraints.ofEventStatus,
+      "tags" -> list(longNumber),
+      "registerMe" -> boolean
+    )(EventInfoForForm.apply)(EventInfoForForm.unapply)
+  }
 
   private def getList(page: Int, size: Int, listType: ListType.Value, searchTagOrNone: Option[EventTag] = None, queryOrNone: Option[String] = None)(implicit request: Request[AnyContent]): Result = {
     val (events, numPages) = listType match {
@@ -97,20 +111,6 @@ object EventPage extends AuthenticateUtil {
     }
   }
 
-  val eventForm = Form {
-    mapping(
-      "id" -> optional(longNumber),
-      "eventType" -> CustomConstraints.ofEventType,
-      "title" -> text(maxLength = 50),
-      "description" -> text,
-      "authorIdOrNone" -> optional(longNumber),
-      "publishDateUnixMillis" -> longNumber,
-      "status" -> CustomConstraints.ofEventStatus,
-      "tags" -> list(longNumber),
-      "registerMe" -> boolean
-    )(EventInfoForForm.apply)(EventInfoForForm.unapply)
-  }
-
   def create() = AuthenticatedAction { implicit request =>
     val newEvent = EventInfoForForm(
       None,
@@ -165,7 +165,8 @@ object EventPage extends AuthenticateUtil {
             formEventInfo.tags.foreach(tagId => {
               EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
             })
-            postChatWork("message.event.updated", eventInfoId, newEventInfo)
+            postChatWork("message.event.updated.chatwork", eventInfoId, newEventInfo)
+            postSlack("message.event.updated.slack", eventInfoId, newEventInfo)
             Messages("event.edit.success")
           case _ =>
             EventInfoDao.create(newEventInfo) match {
@@ -174,7 +175,8 @@ object EventPage extends AuthenticateUtil {
                   EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
                 })
 
-                postChatWork("message.new.event.created", eventInfoId, newEventInfo)
+                postChatWork("message.new.event.created.chatwork", eventInfoId, newEventInfo)
+                postSlack("message.new.event.created.slack", eventInfoId, newEventInfo)
                 Messages("event.create.success")
               case _ =>
                 Messages("event.create.failed")
@@ -186,7 +188,10 @@ object EventPage extends AuthenticateUtil {
     )
   }
 
-  private def postChatWork(messageKey: String, eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): Unit = {
+  /**
+   * 投稿用データの作成
+   */
+  private def createPostData(eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): (String, String, String, String, String) = {
     val author = event.authorIdOrNone.flatMap(UserInfoDao.findById).map(_.fullName).getOrElse(Messages("event.no.user"))
     val title = event.title
     val desc = event.description
@@ -197,9 +202,28 @@ object EventPage extends AuthenticateUtil {
       } else {
         controllers.member.page.routes.EventPage.view(eventId).absoluteURL()
       }
-    val config = ChatworkConfig.get()
+    (author, title, desc, tags, url)
+  }
+
+  /**
+   * Chatworkへの投稿
+   */
+  private def postChatWork(messageKey: String, eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): Unit = {
+    val (author, title, desc, tags, url) = createPostData(eventId, event)
     Global.chatworkClient.foreach(cw => {
+      val config = ChatworkConfig.get()
       cw.postRoomMessage(config.roomId, Messages(messageKey, author, title, desc, tags, url))
+    })
+  }
+
+  /**
+   * Slackへの投稿
+   */
+  private def postSlack(messageKey: String, eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): Unit = {
+    val (author, title, desc, tags, url) = createPostData(eventId, event)
+    Global.slackClient.foreach(slack => {
+      val config = SlackConfig.get()
+      slack.chat.postMessage(config.channelName, Messages(messageKey, author, title, desc, tags, url))
     })
   }
 
