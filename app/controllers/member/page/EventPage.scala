@@ -14,7 +14,7 @@ import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.Messages
 import play.api.i18n.Messages.Implicits._
-import play.api.mvc.{Action, AnyContent, Request, Result}
+import play.api.mvc.{AnyContent, Request, Result}
 
 object EventPage extends AuthenticateUtil {
 
@@ -69,19 +69,19 @@ object EventPage extends AuthenticateUtil {
     Ok(views.html.event.list(request.flash, getUserInfoOrNone, eventWithReactions, assignedNum, notAssignedNum, searchTagOrNone, queryOrNone)(page, size, numPages))
   }
 
-  def listAll(page: Int, size: Int) = Action { implicit request =>
+  def listAll(page: Int, size: Int) = AuthenticatedAction { implicit request =>
     getList(page, size, ListType.All)
   }
 
-  def listAssigned(page: Int, size: Int) = Action { implicit request =>
+  def listAssigned(page: Int, size: Int) = AuthenticatedAction { implicit request =>
     getList(page, size, ListType.Assigned)
   }
 
-  def listNotAssigned(page: Int, size: Int) = Action { implicit request =>
+  def listNotAssigned(page: Int, size: Int) = AuthenticatedAction { implicit request =>
     getList(page, size, ListType.NotAssigned)
   }
 
-  def listSearch(tag: String, query: String, page: Int, size: Int) = Action { implicit request =>
+  def listSearch(tag: String, query: String, page: Int, size: Int) = AuthenticatedAction { implicit request =>
     if (!tag.isEmpty) {
       EventTagDao.findByTagName(tag) match {
         case Some(eventTag) =>
