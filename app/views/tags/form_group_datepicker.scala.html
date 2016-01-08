@@ -20,8 +20,14 @@
 //        cal.set(java.util.Calendar.MILLISECOND, 0)
 //        cal.getTimeInMillis
 //    }
-    ts
+
+    if (ts > 0) {
+        ts.toString
+    } else {
+        ""
+    }
 }
+
 @form_basic(paramName, label, field, labelBaseWidth) {
     <div class="@cssClass">
         <div class='input-group datepicker'>

@@ -162,11 +162,11 @@ $(function () {
     var $dp =$('.datepicker');
     var $dpInput = $dp.find(".datepicker-input");
     var $dpHiddenData = $($dpInput.data("for"));
-    $dp.datetimepicker({
-            format: "YYYY/MM/DD HH:mm",
-            sideBySide: true,
-            defaultDate: new Date(parseInt($dpHiddenData.val()))
-        })
+    var timestamp = parseInt($dpHiddenData.val());
+    var datetimepickerOptions = (timestamp > 0)
+        ? {format: "YYYY/MM/DD HH:mm", sideBySide: true, defaultDate: new Date(timestamp)}
+        : {format: "YYYY/MM/DD HH:mm", sideBySide: true};
+    $dp.datetimepicker(datetimepicerOptions)
         .on("dp.change", function (ev) {
             $dpHiddenData.val(ev.date ? ev.date.unix() * 1000 : 0);
         });
