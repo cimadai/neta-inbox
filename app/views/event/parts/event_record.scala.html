@@ -1,4 +1,5 @@
 @(ev: EventInfo, reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag], authorOrNoe: Option[UserInfo])(implicit m: Messages)
+@maxDisplayNum = @{6}
 <tr @if(authorOrNoe.isEmpty){ class="danger" }>
     <td>@ev.id.get</td>
     <td><a href="@controllers.member.page.routes.EventPage.view(ev.id.get)">@ev.title</a></td>
@@ -20,10 +21,18 @@
             <i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<span class="badge">@reactions.size</span>
         </span>
         <div class="reactions">
-        @for(reaction <- reactions){ @reaction.userInfoOrNone match {
-            case Some(user) => {<img width="24px" height="24px" src="@{user.picture}" title="@{user.fullName}" />}
+        @for(reaction <- reactions.slice(0, maxDisplayNum)){ @reaction.userInfoOrNone match {
+            case Some(user) => {
+                <span>
+                    <img width="24px" height="24px" src="@{user.picture}" title="@{user.fullName}" />
+                    <span></span>
+                </span>
+            }
             case None => {}
         }}
+        @if(reactions.size > maxDisplayNum) {
+            <span>... @m("event.and.more", reactions.size - maxDisplayNum)</span>
+        }
         </div>
     </td>
 </tr>

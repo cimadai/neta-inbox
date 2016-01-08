@@ -214,9 +214,23 @@ $color-white: #fff;
 }
 
 .reactions {
-  img {
+  > span {
     float: left;
     margin: 2px 2px 0 0;
+
+    > span {
+      display: none;
+    }
+  }
+}
+.reactions.detail-reactions {
+  > span {
+    float: none;
+    display: block;
+
+    > span {
+      display: inline-block;
+    }
   }
 }
 

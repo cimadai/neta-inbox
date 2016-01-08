@@ -50,9 +50,14 @@
                         <span class="btn btn-info event-reaction" data-event-id="@event.id" data-reaction-type-id="1"> @m("event.want.to.listen")
                             <i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<span class="badge">@reactions.size</span>
                         </span>
-                        <div class="reactions">
+                        <div class="reactions detail-reactions">
                         @for(reaction <- reactions){ @reaction.userInfoOrNone match {
-                            case Some(user) => {<img width="24px" height="24px" src="@{user.picture}" title="@{user.fullName}" />}
+                            case Some(user) => {
+                                <span>
+                                    <img width="24px" height="24px" src="@{user.picture}" title="@{user.fullName}" />
+                                    <span>@{user.fullName}</span>
+                                </span>
+                            }
                             case None => {}
                         }}
                         </div>
