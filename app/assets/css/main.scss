@@ -8,6 +8,37 @@ $fa-font-path: '../fonts/font-awesome/';
 @import 'typeahead.css';
 @import 'sb-admin-2';
 
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+$footer-height: 40px;
+body {
+  margin-bottom: $footer-height;
+}
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: $footer-height;
+  background-color: #f5f5f5;
+
+  b {
+    font-size: 120%;
+    line-height: 40px;
+  }
+
+  span {
+    font-style: italic;
+    font-size: 90%;
+    line-height: 40px;
+  }
+}
+
+
+
 hr {
   max-width: 50px;
   border-color: #f05f40;
@@ -206,3 +237,4 @@ $color-white: #fff;
   h5 { display: inline-block; }
   h6 { display: inline-block; }
 }
+

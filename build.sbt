@@ -21,7 +21,9 @@ lazy val librairies = Seq(
   "com.h2database" % "h2" % "1.4.177",
   "com.typesafe.play" %% "play-slick" % "1.0.0",
   "org.julienrf" %% "play-jsmessages" % "2.0.0",
-  "net.cimadai" %% "chatwork-scala" % "1.0.1"
+  "net.cimadai" %% "chatwork-scala" % "1.0.1",
+  "com.typesafe.play" %% "play-json" % "2.4.4",
+  "com.flyberrycapital" %% "scala-slack" % "0.3.0-SNAPSHOT"
 )
 
 val preOrder = Iterable("plain/jquery-1.11.3.min.js", "plain/jquery-migrate-1.2.1.min.js", "plain/moment.min.js")
@@ -62,3 +64,10 @@ lazy val root = (project in file("."))
       Seq((pre ++ middle ++ post, "/../" + outputFile))
     }}
   )
+  .enablePlugins(BuildInfoPlugin)
+  .settings(
+    buildInfoOptions += BuildInfoOption.BuildTime,
+    buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
+    buildInfoPackage := "helpers"
+  )
+

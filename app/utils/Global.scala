@@ -3,8 +3,9 @@ package utils
 import java.util.concurrent.atomic.AtomicReference
 
 import _root_.slick.driver.JdbcProfile
+import com.flyberrycapital.slack.SlackClient
 import dao._
-import helpers.ChatworkConfig
+import helpers.{ChatworkConfig, SlackConfig}
 import models._
 import net.cimadai.chatwork.ChatworkClient
 import org.slf4j.LoggerFactory
@@ -21,6 +22,8 @@ object Global extends GlobalSettings {
   private val logger = LoggerFactory.getLogger(getClass)
   private val chatworkClientRef = new AtomicReference[Option[ChatworkClient]](None)
   def chatworkClient = chatworkClientRef.get()
+  private val slackClientRef = new AtomicReference[Option[SlackClient]](None)
+  def slackClient = slackClientRef.get()
 
   override def onStart(app: Application): Unit = {
     logger.debug("Play application is starting.")
@@ -33,6 +36,14 @@ object Global extends GlobalSettings {
     val config = ChatworkConfig.get()
     if (config.apiKey.nonEmpty) {
       chatworkClientRef.set(Some(new ChatworkClient(config.apiKey)))
+    }
+
+    val slackConfig = SlackConfig.get()
+    if (slackConfig.apiToken.nonEmpty) {
+      val slack = new SlackClient(slackConfig.apiToken)
+      slack.connTimeout(5000)
+      slack.readTimeout(5000)
+      slackClientRef.set(Some(slack))
     }
   }
 
