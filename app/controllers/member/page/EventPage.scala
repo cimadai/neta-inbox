@@ -115,7 +115,7 @@ object EventPage extends AuthenticateUtil {
     val newEvent = EventInfoForForm(
       None,
       EventType.None,
-      "New Event",
+      "",
       "",
       None,
       0,
