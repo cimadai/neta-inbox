@@ -20,6 +20,7 @@ login.title = 勉強会ネタ募集中！
 login.message1 = 最新技術、やってみた、つくってみた、○○を支える技術などなど何でもオッケー！
 login.message2 = ログイン可能なドメインはaltplus.co.jpのみになります。
 
+event.and.more = 他{0}件
 event.id = ID
 event.type = ネタタイプ
 event.title = タイトル

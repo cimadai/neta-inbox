@@ -37,8 +37,8 @@ $(function () {
         Api.Event.searchEvent($(this).parent().siblings("input").val());
     });
 
-    $(".event-reaction").click(function (e) {
-        e.preventDefault();
+    $(".event-reaction").click(function (ev: BaseJQueryEventObject) {
+        ev.preventDefault();
         var $btn = $(this);
         Api.Event.toggleEventReaction($btn.data("eventId"), $btn.data("reactionTypeId"), function (json) {
             $btn.find(".badge").text(json.reactions.length);
@@ -46,12 +46,18 @@ $(function () {
             $reactionsArea.empty();
             $.each(json.reactions, function (idx, reaction) {
                 var user = reaction.userInfo;
-                $reactionsArea.append($("<img>").attr({
-                    width: "24px",
-                    height: "24px",
-                    src: user.picture,
-                    title: user.fullName
-                })).append("\n");
+                $reactionsArea.append(
+                    $("<span>").append(
+                        $("<img>").attr({
+                            width: "24px",
+                            height: "24px",
+                            src: user.picture,
+                            title: user.fullName
+                        })
+                    ).append(
+                        $("<span>").text(user.fullName)
+                    )
+                ).append("\n");
             });
         });
 
