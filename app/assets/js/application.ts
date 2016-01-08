@@ -155,7 +155,9 @@ $(function () {
         };
     }
 
-    resetTagSource();
+    if (location.pathname != Alice.Common.baseUrl) {
+        resetTagSource();
+    }
 
     var $dp =$('.datepicker');
     var $dpInput = $dp.find(".datepicker-input");
