@@ -166,7 +166,7 @@ $(function () {
     var datetimepickerOptions = (timestamp > 0)
         ? {format: "YYYY/MM/DD HH:mm", sideBySide: true, defaultDate: new Date(timestamp)}
         : {format: "YYYY/MM/DD HH:mm", sideBySide: true};
-    $dp.datetimepicker(datetimepicerOptions)
+    $dp.datetimepicker(datetimepickerOptions)
         .on("dp.change", function (ev) {
             $dpHiddenData.val(ev.date ? ev.date.unix() * 1000 : 0);
         });
