@@ -56,5 +56,13 @@ object EventInfoDao extends DaoCRUDWithId[EventInfo, EventInfoTable] with DaoBas
     getPaginationAndNumPages(generateQueryWithReactionNum().filter(filter), pageNum, sizeNum)
   }
 
+  override def deleteById(id: Long)(implicit acc: DatabaseConfig[JdbcProfile]): Unit = {
+    DBIO.seq(
+      eventReactionQuery.filter(_.eventInfoId === id).delete,
+      eventTagRelationQuery.filter(_.eventInfoId === id).delete,
+      eventInfoQuery.filter(_.id === id).delete
+    ).runAndAwait
+  }
+
 }
 

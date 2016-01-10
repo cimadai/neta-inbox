@@ -4,13 +4,13 @@ interface Window {
     i18n(val): string;
 }
 
-namespace Alice.Common {
-    export function i18n(...args:any[]): string {
-        return window.i18n.apply(this, args);
-    }
-    export var baseUrl = $("base").attr("href");
+namespace Alice {
 
     export var Utils = {
+        baseUrl: $("base").attr("href"),
+        i18n: function (...args:any[]): string {
+            return window.i18n.apply(this, args);
+        },
         is: function (type, obj) {
             var clas = Object.prototype.toString.call(obj).slice(8, -1);
             return obj !== undefined && obj !== null && clas === type;
@@ -202,4 +202,4 @@ namespace Alice.Common {
             return $('<div />').text(val).html();
         }
     };
-}
+};
