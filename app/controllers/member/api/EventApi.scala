@@ -1,7 +1,7 @@
 package controllers.member.api
 
 import controllers.utils.AuthenticateUtil
-import dao.EventReactionDao
+import dao.{EventInfoDao, EventReactionDao}
 import play.api.libs.json.Json
 
 object EventApi extends AuthenticateUtil {
@@ -10,17 +10,23 @@ object EventApi extends AuthenticateUtil {
 
   def toggleReaction(eventId: Long, reactionTypeId: Long) = AuthenticatedAction { implicit request =>
     onAjax {
-      getUserInfoOrNone match {
-        case Some(userInfo) =>
-          EventReactionDao.toggleReaction(userInfo.id.get, eventId, reactionTypeId)
-          val reactions = EventReactionDao.findByEventInfoId(eventId)
-          renderJsonOk(Json.obj(
-            "reactions" -> reactions.map(reaction => Json.toJson(reaction))
-          ))
-        case _ =>
-          renderJsonError().withHeaders(
-            "X-AJAX-REDIRECT" -> controllers.nonmember.page.routes.PublicPage.index().url
-          )
+      withUserInfo { userInfo =>
+        EventReactionDao.toggleReaction(userInfo.id.get, eventId, reactionTypeId)
+        val reactions = EventReactionDao.findByEventInfoId(eventId)
+        renderJsonOk(Json.obj(
+          "reactions" -> reactions.map(reaction => Json.toJson(reaction))
+        ))
+      }
+    }
+  }
+
+  def deleteEvent(eventId: Long) = AuthenticatedAction { implicit request =>
+    onAjax {
+      withUserInfo { userInfo =>
+        EventInfoDao.deleteById(eventId)
+        renderJsonOk().withHeaders(
+          "X-AJAX-REDIRECT" -> controllers.member.page.routes.EventPage.listAll().url
+        )
       }
     }
   }
