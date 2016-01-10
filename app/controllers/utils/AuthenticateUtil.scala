@@ -34,7 +34,18 @@ trait AuthenticateUtil extends BaseController with JsonResponsible {
   // AuthenticatedActionなメソッドからは取得可能
   // ただのActionから呼ぶとNoneが返る
   protected def getUserInfoOrNone(implicit request: Request[AnyContent]): Option[UserInfo] = {
-     request.session.get("idToken").flatMap(idToken => Cache.getAs[UserInfo](idToken + "profile"))
+    request.session.get("idToken").flatMap(idToken => Cache.getAs[UserInfo](idToken + "profile"))
+  }
+
+  protected def withUserInfo(f: UserInfo => Result)(implicit request: Request[AnyContent]): Result = {
+    getUserInfoOrNone match {
+      case Some(userInfo) =>
+        f(userInfo)
+      case _ =>
+        renderJsonError().withHeaders(
+          "X-AJAX-REDIRECT" -> controllers.nonmember.page.routes.PublicPage.index().url
+        )
+    }
   }
 
 }

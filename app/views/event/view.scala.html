@@ -15,6 +15,7 @@
     <div class="row">
         <div class="col-md-12">
             <a href="@controllers.member.page.routes.EventPage.edit(event.id.get)" class="btn btn-default">@m("general.edit")</a>
+            <button class="btn btn-danger event-delete" data-event-id="@{event.id.get}" data-event-title="@{event.title}">@m("general.delete")</button>
         </div>
     </div>
     <div class="row">

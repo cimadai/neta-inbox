@@ -4,6 +4,7 @@
 /// <reference path="./third_party/bootstrap/bootstrap.v3.datetimepicker.d.ts" />
 /// <reference path="./alice.common.ts" />
 /// <reference path="./alice.api_facade.ts" />
+/// <reference path="./alice.modal.ts" />
 
 interface Window {
     AUTH0_CLIENT_ID: string;
@@ -13,11 +14,13 @@ interface Window {
 
 import A_ = Alice;
 $(function () {
-    var Api = A_.ApiFacade;
+    var Api = A_.Api;
+    var Utils = A_.Utils;
 
     if (window.AUTH0_CLIENT_ID) {
         var lock = new Auth0Lock(window.AUTH0_CLIENT_ID, window.AUTH0_DOMAIN);
 
+        console.log(window.AUTH0_CLIENT_ID);
         $(".btn-login").click(function (e) {
             e.preventDefault();
             lock.show({
@@ -161,7 +164,7 @@ $(function () {
         };
     }
 
-    if (location.pathname != Alice.Common.baseUrl) {
+    if (location.pathname != Alice.Utils.baseUrl) {
         resetTagSource();
     }
 
@@ -176,4 +179,16 @@ $(function () {
         .on("dp.change", function (ev) {
             $dpHiddenData.val(ev.date ? ev.date.unix() * 1000 : 0);
         });
+
+    $(".event-delete").on("click", function () {
+        var $self = $(this);
+        Alice.Modal.show({
+            title: Utils.i18n("general.confirmation"),
+            body: Utils.i18n("message.delete.confirmation.of.event", Utils.escapeHTML($self.data("eventTitle"))),
+            singleButton : false,
+            onOk: function() {
+                Api.Event.deleteEvent($self.data("eventId"));
+            }
+        });
+    })
 });

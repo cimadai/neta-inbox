@@ -10,8 +10,11 @@ general.operate = 操作
 general.create = 作成
 general.edit = 編集
 general.update = 更新
+general.ok = OK
 general.cancel = キャンセル
+general.delete = 削除
 general.view.detail = 詳細を見る
+general.confirmation = 確認
 
 ui.pagenation.previouspage = &laquo;
 ui.pagenation.nextpage = &raquo;
@@ -56,3 +59,5 @@ message.new.event.created.chatwork = [info][title]新しいネタが登録され
 
 message.event.updated.slack = ネタが更新されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}```
 message.new.event.created.slack = 新しいネタが登録されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}```
+
+message.delete.confirmation.of.event = {0} を削除してもよろしいですか？<br/>削除を実行すると「聞きたい」も消え、取り消すことはできません。
