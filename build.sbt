@@ -2,7 +2,7 @@ import scala.collection.mutable.ArrayBuffer
 
 name := "neta-inbox"
 
-version := "0.1.0.0"
+version := "0.1.2.0"
 
 val PROJECT_SCALA_VERSION = "2.11.7"
 

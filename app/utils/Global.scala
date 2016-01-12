@@ -5,6 +5,7 @@ import java.util.concurrent.atomic.AtomicReference
 import _root_.slick.driver.JdbcProfile
 import com.flyberrycapital.slack.SlackClient
 import dao._
+import dao.utils.QueryExtensions._
 import helpers.{ChatworkConfig, SlackConfig}
 import models._
 import net.cimadai.chatwork.ChatworkClient
@@ -14,9 +15,6 @@ import play.api.{Application, GlobalSettings}
 import slick.backend.DatabaseConfig
 import slick.dbio.DBIO
 import slick.jdbc.meta.MTable
-
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
 
 object Global extends GlobalSettings {
   private val logger = LoggerFactory.getLogger(getClass)
@@ -52,15 +50,15 @@ object Global extends GlobalSettings {
   }
 
   private def createTables(implicit acc: DatabaseConfig[JdbcProfile]): Unit = {
-    val f0 = acc.db.run(DBIO.seq(
+    implicit val database = acc.db
+    DBIO.seq(
       UserInfoDao.createDDL,
       EventInfoDao.createDDL,
       EventReactionTypeDao.createDDL,
       EventReactionDao.createDDL,
       EventTagDao.createDDL,
       EventTagRelationDao.createDDL
-    ))
-    Await.result(f0, Duration.Inf)
+    ).runAndAwait
   }
 
   private def createUser(email: String, familyName: String, givenName: String, nickName: String, picture: String)(implicit acc: DatabaseConfig[JdbcProfile]): UserInfo = {
@@ -88,9 +86,8 @@ object Global extends GlobalSettings {
   }
 
   private def isFirstLaunch(implicit acc: DatabaseConfig[JdbcProfile]): Boolean = {
-    val action = MTable.getTables("USER_INFOS")
-    val f = acc.db.run(action)
-    Await.result(f, Duration.Inf).isEmpty
+    implicit val database = acc.db
+    MTable.getTables("USER_INFOS").runAndAwait.isEmpty
   }
 
   private def setupData(implicit acc: DatabaseConfig[JdbcProfile]): Unit = {
