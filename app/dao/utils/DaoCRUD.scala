@@ -113,6 +113,13 @@ abstract class DaoCRUDWithId[Q <: DatabaseObjectWithId, E <: TableWithId[Q]] ext
   }
 
   /**
+   * IDでの削除
+   */
+  def deleteById(id: Long)(implicit acc: DatabaseConfig[JdbcProfile]): Unit = {
+    baseQuery.filter(_.id === id).delete.runAndAwait
+  }
+
+  /**
    * ID検索
    */
   def findById(id: Long)(implicit acc: DatabaseConfig[JdbcProfile]): Option[Q] = {

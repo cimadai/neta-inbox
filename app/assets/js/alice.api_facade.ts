@@ -2,30 +2,37 @@
 /// <reference path="./alice.common.ts" />
 /// <reference path="./alice.notify.ts" />
 
-namespace Alice.ApiFacade {
-    var baseUrl = Alice.Common.baseUrl;
-    var apiBaseUrl = Alice.Common.baseUrl + "api/";
+namespace Alice {
+    var baseUrl = Alice.Utils.baseUrl;
+    var apiBaseUrl = Alice.Utils.baseUrl + "api/";
 
-    export var Event = {
-        toggleEventReaction: function (eventId: number, reactionTypeId: number, onSuccess?, onError?): void {
-            var url = apiBaseUrl + "event/" + eventId + "/" + reactionTypeId;
-            var data = {};
-            ajaxPost(url, data, onSuccess, onError);
+    export var Api = {
+        Event: {
+            toggleEventReaction: function (eventId: number, reactionTypeId: number, onSuccess?, onError?): void {
+                var url = apiBaseUrl + "event/" + eventId + "/" + reactionTypeId;
+                var data = {};
+                ajaxPost(url, data, onSuccess, onError);
+            },
+            deleteEvent: function (eventId: number, onSuccess?, onError?): void {
+                var url = apiBaseUrl + "event/" + eventId;
+                var data = {};
+                ajaxDelete(url, data, onSuccess, onError);
+            },
+            searchEvent: function (query: string): void {
+                var url = baseUrl + "event/list/search?q=" + query;
+                redirect(url);
+            }
         },
-        searchEvent: function (query: string): void {
-            var url = baseUrl + "event/list/search?q=" + query;
-            redirect(url);
-        }
-    };
-    export var EventTag = {
-        getAllTags: function (onSuccess?, onError?): void {
-            var url = apiBaseUrl + "event/tags";
-            ajaxGet(url, onSuccess, onError)
-        },
-        addTag: function (key: string, onSuccess?, onError?): void {
-            var url = apiBaseUrl + "event/tag/new/" + key;
-            var data = {};
-            ajaxPost(url, data, onSuccess, onError);
+        EventTag: {
+            getAllTags: function (onSuccess?, onError?): void {
+                var url = apiBaseUrl + "event/tags";
+                ajaxGet(url, onSuccess, onError)
+            },
+            addTag: function (key: string, onSuccess?, onError?): void {
+                var url = apiBaseUrl + "event/tag/new/" + key;
+                var data = {};
+                ajaxPost(url, data, onSuccess, onError);
+            }
         }
     };
 
@@ -57,9 +64,9 @@ namespace Alice.ApiFacade {
                 if (data.result !== 0 && pushGrowl) {
                     var errorCode = data.domain && data.code ? "Error(" + data.domain + "-" + data.code + ") : " : "";
                     var key = (data.messageKey || data.caption);
-                    var args = $.map(data.args || [], function (arg, idx) { return Alice.Common.Utils.escapeHTML(arg); });
+                    var args = $.map(data.args || [], function (arg, idx) { return Alice.Utils.escapeHTML(arg); });
                     var keyAndArgs = data.args ? [key].concat(args) : [key];
-                    Alice.Notify.error(errorCode + Alice.Common.i18n.apply(this, keyAndArgs));
+                    Alice.Notify.error(errorCode + Alice.Utils.i18n.apply(this, keyAndArgs));
                 }
             }
         };
@@ -72,7 +79,7 @@ namespace Alice.ApiFacade {
             }
 
             if (doDefaultHandling) {
-                Alice.Notify.error(Alice.Common.i18n("error.cannot.execute.api"));
+                Alice.Notify.error(Alice.Utils.i18n("error.cannot.execute.api"));
             }
         }
     };
@@ -108,4 +115,4 @@ namespace Alice.ApiFacade {
         location.href = url;
     }
 
-}
+};

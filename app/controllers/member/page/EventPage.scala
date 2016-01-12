@@ -27,7 +27,7 @@ object EventPage extends AuthenticateUtil {
       "title" -> text(maxLength = 50),
       "description" -> text,
       "authorIdOrNone" -> optional(longNumber),
-      "publishDateUnixMillis" -> longNumber,
+      "publishDateUnixMillis" -> default(longNumber, 0L),
       "status" -> CustomConstraints.ofEventStatus,
       "tags" -> list(longNumber),
       "registerMe" -> boolean
