@@ -20,7 +20,6 @@ $(function () {
     if (window.AUTH0_CLIENT_ID) {
         var lock = new Auth0Lock(window.AUTH0_CLIENT_ID, window.AUTH0_DOMAIN);
 
-        console.log(window.AUTH0_CLIENT_ID);
         $(".btn-login").click(function (e) {
             e.preventDefault();
             lock.show({
