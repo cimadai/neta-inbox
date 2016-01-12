@@ -23,7 +23,9 @@ lazy val librairies = Seq(
   "org.julienrf" %% "play-jsmessages" % "2.0.0",
   "net.cimadai" %% "chatwork-scala" % "1.0.1",
   "com.typesafe.play" %% "play-json" % "2.4.4",
-  "com.flyberrycapital" %% "scala-slack" % "0.3.0-SNAPSHOT"
+  "com.flyberrycapital" %% "scala-slack" % "0.3.0-SNAPSHOT",
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test"
 )
 
 val preOrder = Iterable("plain/jquery-1.11.3.min.js", "plain/jquery-migrate-1.2.1.min.js", "plain/moment.min.js")
