@@ -37,8 +37,8 @@ $(function () {
         Api.Event.searchEvent($(this).parent().siblings("input").val());
     });
 
-    $(".event-reaction").click(function (e) {
-        e.preventDefault();
+    $(".event-reaction").click(function (ev: BaseJQueryEventObject) {
+        ev.preventDefault();
         var $btn = $(this);
         Api.Event.toggleEventReaction($btn.data("eventId"), $btn.data("reactionTypeId"), function (json) {
             $btn.find(".badge").text(json.reactions.length);
@@ -46,12 +46,18 @@ $(function () {
             $reactionsArea.empty();
             $.each(json.reactions, function (idx, reaction) {
                 var user = reaction.userInfo;
-                $reactionsArea.append($("<img>").attr({
-                    width: "24px",
-                    height: "24px",
-                    src: user.picture,
-                    title: user.fullName
-                })).append("\n");
+                $reactionsArea.append(
+                    $("<span>").append(
+                        $("<img>").attr({
+                            width: "24px",
+                            height: "24px",
+                            src: user.picture,
+                            title: user.fullName
+                        })
+                    ).append(
+                        $("<span>").text(user.fullName)
+                    )
+                ).append("\n");
             });
         });
 
@@ -155,16 +161,18 @@ $(function () {
         };
     }
 
-    resetTagSource();
+    if (location.pathname != Alice.Common.baseUrl) {
+        resetTagSource();
+    }
 
     var $dp =$('.datepicker');
     var $dpInput = $dp.find(".datepicker-input");
     var $dpHiddenData = $($dpInput.data("for"));
-    $dp.datetimepicker({
-            format: "YYYY/MM/DD HH:mm",
-            sideBySide: true,
-            defaultDate: new Date(parseInt($dpHiddenData.val()))
-        })
+    var timestamp = parseInt($dpHiddenData.val());
+    var datetimepickerOptions = (timestamp > 0)
+        ? {format: "YYYY/MM/DD HH:mm", sideBySide: true, defaultDate: new Date(timestamp)}
+        : {format: "YYYY/MM/DD HH:mm", sideBySide: true};
+    $dp.datetimepicker(datetimepickerOptions)
         .on("dp.change", function (ev) {
             $dpHiddenData.val(ev.date ? ev.date.unix() * 1000 : 0);
         });
