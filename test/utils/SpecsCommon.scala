@@ -53,7 +53,8 @@ trait SpecsCommon {
   }
 
   private def isFirstLaunch: Boolean = {
-    MTable.getTables("USER_INFOS").runAndAwait.isEmpty
+    val existOrNone = MTable.getTables(UserInfoDao.baseQuery.baseTableRow.tableName).runAndAwait
+    existOrNone.isEmpty || existOrNone.get.isEmpty
   }
 
   private def createUser(email: String, familyName: String, givenName: String, nickName: String, picture: String): UserInfo = {

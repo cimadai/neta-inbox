@@ -17,12 +17,12 @@ class DaoSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with S
 
   before {
     createTablesIfNeeded()
-    //truncateDatabases()
+    truncateDatabases()
     setupData()
   }
 
   "DAOs" should {
-    "run riht" in {
+    "run right" in {
       EventInfoDao.count() > 0 mustBe true
       EventReactionDao.count() > 0 mustBe true
       EventReactionTypeDao.count() > 0 mustBe true
