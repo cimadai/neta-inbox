@@ -2,13 +2,10 @@ package models
 
 import _root_.utils.SpecsCommon
 import dao._
-import dao.utils.DatabaseAccessor.jdbcProfile.api._
 import org.scalatest.BeforeAndAfter
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.cache.Cache
 import play.api.db.slick.DatabaseConfigProvider
-import play.api.mvc._
-import play.api.test.{FakeRequest, FakeApplication}
+import play.api.test.FakeApplication
 import play.api.test.Helpers._
 import slick.driver.JdbcProfile
 
@@ -19,6 +16,7 @@ class DaoSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with S
   implicit override lazy val db = dbConfig.db
 
   before {
+    createTablesIfNeeded()
     truncateDatabases()
     setupData()
   }

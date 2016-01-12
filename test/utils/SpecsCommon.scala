@@ -7,6 +7,7 @@ import models._
 import slick.backend.DatabaseConfig
 import slick.dbio.DBIO
 import slick.driver.JdbcProfile
+import slick.jdbc.meta.MTable
 
 trait SpecsCommon {
 
@@ -33,6 +34,23 @@ trait SpecsCommon {
         EventTagDao.truncateDDL()
       ).runAndAwait
     }
+  }
+
+  protected def createTablesIfNeeded(): Unit = {
+    if (isFirstLaunch) {
+      DBIO.seq(
+        UserInfoDao.createDDL,
+        EventInfoDao.createDDL,
+        EventReactionTypeDao.createDDL,
+        EventReactionDao.createDDL,
+        EventTagDao.createDDL,
+        EventTagRelationDao.createDDL
+      ).runAndAwait
+    }
+  }
+
+  private def isFirstLaunch: Boolean = {
+    MTable.getTables("USER_INFOS").runAndAwait.isEmpty
   }
 
   private def createUser(email: String, familyName: String, givenName: String, nickName: String, picture: String): UserInfo = {

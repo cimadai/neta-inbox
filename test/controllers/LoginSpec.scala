@@ -34,6 +34,7 @@ class LoginSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with
   }
 
   before {
+    createTablesIfNeeded()
     truncateDatabases()
     setupData()
   }
