@@ -38,6 +38,7 @@ trait SpecsCommon {
 
   protected def createTablesIfNeeded(): Unit = {
     if (isFirstLaunch) {
+      println("Table creating...")
       DBIO.seq(
         UserInfoDao.createDDL,
         EventInfoDao.createDDL,
@@ -46,11 +47,14 @@ trait SpecsCommon {
         EventTagDao.createDDL,
         EventTagRelationDao.createDDL
       ).runAndAwait
+    } else {
+      println("Table already exists.")
     }
   }
 
   private def isFirstLaunch: Boolean = {
-    MTable.getTables("USER_INFOS").runAndAwait.isEmpty
+    val existOrNone = MTable.getTables(UserInfoDao.baseQuery.baseTableRow.tableName).runAndAwait
+    existOrNone.isEmpty || existOrNone.get.isEmpty
   }
 
   private def createUser(email: String, familyName: String, givenName: String, nickName: String, picture: String): UserInfo = {

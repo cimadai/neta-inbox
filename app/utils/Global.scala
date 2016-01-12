@@ -61,6 +61,7 @@ object Global extends GlobalSettings {
 
   private def isFirstLaunch(implicit acc: DatabaseConfig[JdbcProfile]): Boolean = {
     implicit val database = acc.db
-    MTable.getTables("USER_INFOS").runAndAwait.isEmpty
+    val existOrNone = MTable.getTables(UserInfoDao.baseQuery.baseTableRow.tableName).runAndAwait
+    existOrNone.isEmpty || existOrNone.get.isEmpty
   }
 }
