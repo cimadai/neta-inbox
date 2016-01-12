@@ -1,15 +1,14 @@
 package controllers.member.api
 
-import controllers.utils.{AuthenticateUtil, JsonResponsible}
-import dao.{EventTagDao, EventReactionDao, UserInfoDao}
-import models.{JsonError, JsonErrors, EventTag}
-import play.api.libs.json.Json
-import play.api.mvc.Action
+import controllers.utils.AuthenticateUtil
+import dao.EventTagDao
 import models.JsonModelWriterImplicits._
+import models.{EventTag, JsonError, JsonErrors}
+import play.api.libs.json.Json
 
-object EventTagApi extends AuthenticateUtil with JsonResponsible {
+object EventTagApi extends AuthenticateUtil {
 
-  def getAllTags = Action { implicit request =>
+  def getAllTags = AuthenticatedAction { implicit request =>
     onAjax {
       renderJsonOk(Json.obj(
         "tags" -> EventTagDao.list().map(ev => Json.toJson(ev))
@@ -17,8 +16,7 @@ object EventTagApi extends AuthenticateUtil with JsonResponsible {
     }
   }
 
-  // TODO: member only
-  def addTag(key: String) = Action { implicit request =>
+  def addTag(key: String) = AuthenticatedAction { implicit request =>
     onAjax {
       createTagOrError(key) match {
         case Right(tag) => renderJsonOk(Json.obj("tag" -> Json.toJson(tag)))

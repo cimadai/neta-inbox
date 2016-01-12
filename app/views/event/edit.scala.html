@@ -19,12 +19,12 @@
             @form_group_input_text("title", Messages("event.title"), form("title"), cssClass = "col-sm-6")
             @form_group_textarea("description", Messages("event.description"), form("description"), cssClass = "col-sm-6")('rows -> "11", 'placeholder -> m("event.description.placeholder"))
             @form_group_hidden("authorIdOrNone", form("authorIdOrNone"))
-            @form_group_datepicker("publishDateUnixMillis", Messages("event.date"), form("publishDateUnixMillis"))
+            @form_group_datepicker("publishDateUnixMillis", Messages("event.date"), form("publishDateUnixMillis"), placeholder = m("event.publish_date.placeholder"))
             @form_group_hidden("status", form("status"))
 
             @form_basic("tag", Messages("event.tag"), form("tags"), 3) {
                 <div class="col-sm-4">
-                    <input type="text" class="input form-control event-tag-typeahead" />
+                    <input type="text" class="input form-control event-tag-typeahead" placeholder="@{m("event.tag.placeholder")}" />
                 </div>
                 <div class="col-sm-4 event-tag-container">
                     @for(tag <- tags) {

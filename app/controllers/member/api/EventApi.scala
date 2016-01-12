@@ -1,15 +1,14 @@
 package controllers.member.api
 
-import controllers.utils.{AuthenticateUtil, JsonResponsible}
+import controllers.utils.AuthenticateUtil
 import dao.EventReactionDao
 import play.api.libs.json.Json
-import play.api.mvc.Action
 
-object EventApi extends AuthenticateUtil with JsonResponsible {
+object EventApi extends AuthenticateUtil {
 
   import models.JsonModelWriterImplicits._
 
-  def toggleReaction(eventId: Long, reactionTypeId: Long) = Action { implicit request =>
+  def toggleReaction(eventId: Long, reactionTypeId: Long) = AuthenticatedAction { implicit request =>
     onAjax {
       getUserInfoOrNone match {
         case Some(userInfo) =>

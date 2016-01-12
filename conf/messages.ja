@@ -1,3 +1,6 @@
+app.version = ver {0} (built: {1})
+app.copyright = &copy; 2016 cimadai. MIT License.
+
 title.application = ネタ募集箱（仮）
 title.event = ネタリスト
 title.event.edit = ネタ編集
@@ -17,6 +20,7 @@ login.title = 勉強会ネタ募集中！
 login.message1 = 最新技術、やってみた、つくってみた、○○を支える技術などなど何でもオッケー！
 login.message2 = ログイン可能なドメインは {0} のみになります。
 
+event.and.more = 他{0}件
 event.id = ID
 event.type = ネタタイプ
 event.title = タイトル
@@ -33,6 +37,8 @@ event.user.all = すべてのネタ
 event.add = 新しいネタを登録する
 event.registerMe = このネタを自分で発表する。
 event.description.placeholder = ネタに関する概要を入力してください。
+event.publish_date.placeholder = 空欄は未定になります。
+event.tag.placeholder = 存在しないタグはEnterキーで新規登録されます。
 event.edit.success = ネタを更新しました。
 event.edit.failed = ネタを更新できませんでした。
 event.create.success = ネタを作成しました。
@@ -45,5 +51,8 @@ constraint.max = 最大値: {0}
 constraint.maxLength = 最大文字数: {0}
 constraint.email = Eメールアドレスを入力してください。
 
-message.event.updated = [info][title]ネタが更新されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]
-message.new.event.created = [info][title]新しいネタが登録されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]
+message.event.updated.chatwork = [info][title]ネタが更新されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]
+message.new.event.created.chatwork = [info][title]新しいネタが登録されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]
+
+message.event.updated.slack = ネタが更新されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}```
+message.new.event.created.slack = 新しいネタが登録されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}```
