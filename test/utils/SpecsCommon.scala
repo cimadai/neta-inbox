@@ -38,6 +38,7 @@ trait SpecsCommon {
 
   protected def createTablesIfNeeded(): Unit = {
     if (isFirstLaunch) {
+      println("Table creating...")
       DBIO.seq(
         UserInfoDao.createDDL,
         EventInfoDao.createDDL,
@@ -46,6 +47,8 @@ trait SpecsCommon {
         EventTagDao.createDDL,
         EventTagRelationDao.createDDL
       ).runAndAwait
+    } else {
+      println("Table already exists.")
     }
   }
 

@@ -17,7 +17,7 @@ class DaoSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with S
 
   before {
     createTablesIfNeeded()
-    truncateDatabases()
+    //truncateDatabases()
     setupData()
   }
 
