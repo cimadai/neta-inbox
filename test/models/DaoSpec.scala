@@ -22,7 +22,7 @@ class DaoSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with S
   }
 
   "DAOs" should {
-    "run riht" in {
+    "run right" in {
       EventInfoDao.count() > 0 mustBe true
       EventReactionDao.count() > 0 mustBe true
       EventReactionTypeDao.count() > 0 mustBe true
