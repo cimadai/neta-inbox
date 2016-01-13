@@ -4,7 +4,7 @@
 ページネーション用のコントロールを表示する。
 [注意]クリックにより別のページを表示する際にurl文字列を参照するためroutesファイルの記述に依存する。
 *@
-@(url: String, currentPage: Int, numPages: Int, pageSize: Int, widthAroundCurrent: Int = 2, currentPageParamKey: String = "page", pageSizeParamKey: String = "pageSize")(implicit m: Messages)
+@(url: String, currentPage: Int, numPages: Int, pageSize: Int, widthAroundCurrent: Int = 2, currentPageParamKey: String = "page", pageSizeParamKey: String = "size")(implicit m: Messages)
 
 <ul class="pagination">
     @* 前ボタン *@
