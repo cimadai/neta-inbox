@@ -2,28 +2,26 @@ package utils
 
 import java.util.concurrent.atomic.AtomicReference
 
-import slick.driver.JdbcProfile
 import com.flyberrycapital.slack.SlackClient
 import dao._
 import dao.utils.QueryExtensions._
 import helpers.{ChatworkConfig, SlackConfig}
 import net.cimadai.chatwork.ChatworkClient
-import org.slf4j.LoggerFactory
 import play.api.db.slick.DatabaseConfigProvider
-import play.api.{Application, GlobalSettings}
+import play.api.{Application, GlobalSettings, Logger}
 import slick.backend.DatabaseConfig
 import slick.dbio.DBIO
+import slick.driver.JdbcProfile
 import slick.jdbc.meta.MTable
 
 object Global extends GlobalSettings {
-  private val logger = LoggerFactory.getLogger(getClass)
   private val chatworkClientRef = new AtomicReference[Option[ChatworkClient]](None)
   def chatworkClient = chatworkClientRef.get()
   private val slackClientRef = new AtomicReference[Option[SlackClient]](None)
   def slackClient = slackClientRef.get()
 
   override def onStart(app: Application): Unit = {
-    logger.debug("Play application is starting.")
+    Logger.info("Play application is starting.")
     implicit val dbConfig = DatabaseConfigProvider.get[JdbcProfile](app)
     if (isFirstLaunch) {
       createTables
@@ -44,7 +42,7 @@ object Global extends GlobalSettings {
   }
 
   override def onStop(app: Application): Unit = {
-    logger.debug("Play application is stopping.")
+    Logger.info("Play application is stopping.")
   }
 
   private def createTables(implicit acc: DatabaseConfig[JdbcProfile]): Unit = {
