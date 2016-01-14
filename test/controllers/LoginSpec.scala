@@ -14,7 +14,7 @@ import slick.driver.JdbcProfile
 
 class LoginSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with SpecsCommon {
 
-  implicit override lazy val app = FakeApplication(additionalConfiguration = inMemoryDatabase("test"))
+  implicit override lazy val app = FakeApplication(additionalConfiguration = inMemoryDatabase("play"))
   implicit override lazy val dbConfig = DatabaseConfigProvider.get[JdbcProfile](app)
   implicit override lazy val db = dbConfig.db
 

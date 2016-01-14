@@ -29,6 +29,7 @@ object EventPage extends AuthenticateUtil {
       "authorIdOrNone" -> optional(longNumber),
       "publishDateUnixMillis" -> default(longNumber, 0L),
       "status" -> CustomConstraints.ofEventStatus,
+      "duration" -> default(longNumber, 0L),
       "tags" -> list(longNumber),
       "registerMe" -> boolean
     )(EventInfoForForm.apply)(EventInfoForForm.unapply)
@@ -120,6 +121,7 @@ object EventPage extends AuthenticateUtil {
       None,
       0,
       EventStatus.New,
+      0,
       List.empty,
       registerMe = true
     )
@@ -191,10 +193,16 @@ object EventPage extends AuthenticateUtil {
   /**
    * 投稿用データの作成
    */
-  private def createPostData(eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): (String, String, String, String, String) = {
+  private def createPostData(eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): (String, String, String, String, String, String, String) = {
     val author = event.authorIdOrNone.flatMap(UserInfoDao.findById).map(_.fullName).getOrElse(Messages("event.no.user"))
     val title = event.title
     val desc = event.description
+    val date = views.support.ViewSupport.formatDateTimeOrDefault(event.publishDateUnixMillis, Messages("event.date.undefined"))
+    val duration = if (event.duration > 0) {
+      Messages("event.duration.as", event.duration)
+    } else {
+      Messages("event.duration.undefined")
+    }
     val tags = EventTagRelationDao.findTagsByEventInfoId(eventId).map(_.text).mkString(",")
     val url =
       if (Play.isProd) {
@@ -202,17 +210,17 @@ object EventPage extends AuthenticateUtil {
       } else {
         controllers.member.page.routes.EventPage.view(eventId).absoluteURL()
       }
-    (author, title, desc, tags, url)
+    (author, title, desc, date, duration, tags, url)
   }
 
   /**
    * Chatworkへの投稿
    */
   private def postChatWork(messageKey: String, eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): Unit = {
-    val (author, title, desc, tags, url) = createPostData(eventId, event)
+    val (author, title, desc, date, duration, tags, url) = createPostData(eventId, event)
     Global.chatworkClient.foreach(cw => {
       val config = ChatworkConfig.get()
-      cw.postRoomMessage(config.roomId, Messages(messageKey, author, title, desc, tags, url))
+      cw.postRoomMessage(config.roomId, Messages(messageKey, author, title, desc, date, duration, tags, url))
     })
   }
 
@@ -220,10 +228,10 @@ object EventPage extends AuthenticateUtil {
    * Slackへの投稿
    */
   private def postSlack(messageKey: String, eventId: Long, event: EventInfo)(implicit request: Request[AnyContent]): Unit = {
-    val (author, title, desc, tags, url) = createPostData(eventId, event)
+    val (author, title, desc, date, duration, tags, url) = createPostData(eventId, event)
     Global.slackClient.foreach(slack => {
       val config = SlackConfig.get()
-      slack.chat.postMessage(config.channelName, Messages(messageKey, author, title, desc, tags, url))
+      slack.chat.postMessage(config.channelName, Messages(messageKey, author, title, desc, date, duration, tags, url))
     })
   }
 

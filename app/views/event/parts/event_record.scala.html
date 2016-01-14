@@ -9,6 +9,7 @@
             </span>.toString)
     ).getOrElse(m("event.no.user"))</td>
     <td>@{views.support.ViewSupport.formatDateTimeOrDefault(ev.publishDateUnixMillis, m("event.date.undefined"))}</td>
+    <td>@{m("event.duration.as", ev.duration)}</td>
     <td>
         <div class="event-tag-container">
         @for(tag <- tags){

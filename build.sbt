@@ -19,7 +19,8 @@ lazy val librairies = Seq(
   cache,
   ws,
   "com.h2database" % "h2" % "1.4.177",
-  "com.typesafe.play" %% "play-slick" % "1.0.0",
+  "com.typesafe.play" %% "play-slick" % "1.0.1",
+  "com.typesafe.play" %% "play-slick-evolutions" % "1.0.1",
   "org.julienrf" %% "play-jsmessages" % "2.0.0",
   "net.cimadai" %% "chatwork-scala" % "1.0.1",
   "com.typesafe.play" %% "play-json" % "2.4.4",
@@ -49,6 +50,7 @@ def splitFileList(files: Seq[(File, String)], keys: Iterable[String]): (Seq[(Fil
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtWeb)
   .settings(
+    javaOptions in Test += "-Dconfig.file=test/conf/test.conf",
     scalaVersion := PROJECT_SCALA_VERSION,
     libraryDependencies ++= librairies,
     sassOptions in Assets ++= Seq("--compass", "-r", "compass"),

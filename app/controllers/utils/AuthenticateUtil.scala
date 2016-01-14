@@ -16,7 +16,7 @@ trait AuthenticateUtil extends BaseController with JsonResponsible {
       (request.session.get("idToken").flatMap { idToken =>
         Cache.getAs[UserInfo](idToken + "profile")
       } map { profile =>
-        val accessToken = request.session.get("accessToken").get
+        val accessToken = request.session.get("accessToken").getOrElse("unknown")
         accessLogger.info(s"<AuthenticateUtil> Logged in access.\taccessToken:$accessToken\trequestUri:${request.uri}")
         f(request)
       }).orElse {
