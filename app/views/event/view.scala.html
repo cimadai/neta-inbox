@@ -25,6 +25,15 @@
             @form_group_textarea("description", Messages("event.description"), form("description"), cssClass = "col-sm-6")('rows -> "11", 'readonly -> "true")
             @form_group_static(Messages("event.date"), ViewSupport.formatDateTimeOrDefault(event.publishDateUnixMillis, m("event.date.undefined")))
 
+            @form_basic("duration", Messages("event.duration"), form("duration"), 3) {
+                <div class="col-sm-2">
+                    <div class="input-group time-duration">
+                        <span type="number" class="form-control">@{event.duration}</span>
+                        <span class="input-group-addon">@m("general.minute")</span>
+                    </div>
+                </div>
+            }
+
             @form_basic("tag", Messages("event.tag"), form("tags"), 3) {
                 <div class="col-sm-8 event-tag-container">
                     @for(tag <- tags) {

@@ -21,6 +21,14 @@
             @form_group_hidden("authorIdOrNone", form("authorIdOrNone"))
             @form_group_datepicker("publishDateUnixMillis", Messages("event.date"), form("publishDateUnixMillis"), placeholder = m("event.publish_date.placeholder"))
             @form_group_hidden("status", form("status"))
+            @form_basic("duration", Messages("event.duration"), form("duration"), 3) {
+                <div class="col-sm-2">
+                    <div class="input-group time-duration">
+                        <input type="number" class="form-control" name="duration" id="input_duration" value="@{form("duration").value.getOrElse("")}" >
+                        <span class="input-group-addon">@m("general.minute")</span>
+                    </div>
+                </div>
+            }
 
             @form_basic("tag", Messages("event.tag"), form("tags"), 3) {
                 <div class="col-sm-4">
