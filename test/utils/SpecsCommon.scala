@@ -87,23 +87,13 @@ trait SpecsCommon {
   }
 
   protected def setupData(): Unit = {
-    val user0 = createUser("dice.k1984@gmail.com", "嶋田", "大輔", "daisuke-shimada", "https://lh5.googleusercontent.com/-t_SSgdNb9LM/AAAAAAAAAAI/AAAAAAAAAAA/5sUlkQ-eH6g/photo.jpg")
+    val user0 = createUser("test@example.com", "test", "test", "test", "")
 
     val tagScala = createTag("Scala")
     val tagJavaScript = createTag("JavaScript")
-    val tagPlayFramework = createTag("PlayFramework")
-    val tagTypeScript = createTag("TypeScript")
-    val tagScss = createTag("SCSS")
-    val tagIntellij = createTag("Intellij IDEA")
-    val tagUnity = createTag("Unity")
-    val tagCsharp = createTag("C#")
-    val tagGo = createTag("Go")
-    val tagPhp = createTag("PHP")
-    val tagLaravel = createTag("Laravel")
-    val tagHasunoha = createTag("Hasunoha")
 
-    val ev0 = createEvent("ネタ募集箱を支える技術", "このネタ募集箱に使われている技術をご紹介します。", Some(user0), Iterable(tagScala, tagJavaScript, tagPlayFramework, tagTypeScript, tagScss, tagIntellij))
-    val reactionTypeId = EventReactionTypeDao.create(EventReactionType(None, "聞きたい！")).get
+    val ev0 = createEvent("test", "test", Some(user0), Iterable(tagScala, tagJavaScript))
+    val reactionTypeId = EventReactionTypeDao.create(EventReactionType(None, "test")).get
 
     createEventReaction(user0, ev0, reactionTypeId)
   }

@@ -3,6 +3,7 @@ package utils
 import java.util.concurrent.atomic.AtomicReference
 
 import com.flyberrycapital.slack.SlackClient
+import dao._
 import helpers.{ChatworkConfig, SlackConfig}
 import net.cimadai.chatwork.ChatworkClient
 import play.api.{Application, GlobalSettings, Logger}
@@ -15,6 +16,14 @@ object Global extends GlobalSettings {
 
   override def onStart(app: Application): Unit = {
     Logger.info("Play application is starting.")
+
+    UserInfoDao.createDDL.statements.foreach(println(_))
+    EventInfoDao.createDDL.statements.foreach(println(_))
+    EventReactionTypeDao.createDDL.statements.foreach(println(_))
+    EventReactionDao.createDDL.statements.foreach(println(_))
+    EventTagDao.createDDL.statements.foreach(println(_))
+    EventTagRelationDao.createDDL.statements.foreach(println(_))
+    EventTagRelationDao.createDDL.statements.foreach(println(_))
 
     val config = ChatworkConfig.get()
     if (config.apiKey.nonEmpty) {
