@@ -1,43 +1,68 @@
-box: killercentury/sbt
+box: cimadai/sbt_all_in_one
 build:
   steps:
     - script:
-      name: check JDK
+      name: enable cache
       code: |
-        java -version
-    - script:
-      name: install sass
-      code: |
-        apt-get install -y ruby ruby-dev libffi-dev gcc make
-        gem install sass compass --no-ri --no-doc
-    - script:
-      name: install typescript
-      code: |
-        apt-get install -y npm
-        npm install -g typescript
+        mkdir -p "$WERCKER_CACHE_DIR/wercker/apt-cache"
+        cp -R /var/cache/apt/archives/* "$WERCKER_CACHE_DIR/wercker/apt-cache"
+        sudo rm -fr /var/cache/apt/archives
+        sudo ln -s "$WERCKER_CACHE_DIR/wercker/apt-cache" /var/cache/apt/archives
+        ls -la /var/cache/apt/
+
+        mkdir -p "$WERCKER_CACHE_DIR/wercker/apt-lists"
+        sudo rm -fr /var/lib/apt/lists
+        sudo ln -s "$WERCKER_CACHE_DIR/wercker/apt-lists" /var/lib/apt/lists
+
+        mkdir -p "$WERCKER_CACHE_DIR/wercker/ivy2"
+        cp -R ~/.ivy2/* "$WERCKER_CACHE_DIR/wercker/ivy2"
+        sudo rm -fr ~/.ivy2
+        sudo ln -s "$WERCKER_CACHE_DIR/wercker/ivy2" ~/.ivy2
+
+        mkdir -p "$WERCKER_CACHE_DIR/wercker/npm"
+        npm config set cache "$WERCKER_CACHE_DIR/wercker/npm"
     - script:
       name: sbt test and coverage
       code: |
-        sbt compile
-        sbt coverage test
-        sbt coverageReport
+        sbt coverage test coverageReport
     - script:
       name: sbt dist
       code: |
-        sbt dist
+        sbt web-stage dist
     - script:
       name: install unzip
       code: |
         apt-get install -y unzip
+#    - script:
+#      name: copy artifact
+#      code: |
+#        cp ./target/universal/neta-inbox-*.zip -d "$WERCKER_REPORT_ARTIFACTS_DIR/"
+#    - script:
+#      name: unzip dist
+#      code: |
+#        unzip ./target/universal/neta-inbox-*.zip -d "$WERCKER_REPORT_ARTIFACTS_DIR/staging"
+#        unzip ./target/universal/neta-inbox-*.zip -d "$WERCKER_REPORT_ARTIFACTS_DIR/production"
+#    - script:
+#      name: config files
+#      code: |
+#        DIST_NAME=`ls ./target/universal/neta-inbox-*.zip | sed "s/.*\/\(neta.*\).zip/\1/"`
+#        sed -i -r "s/(auth0.callbackURL).*/\1=\"$AUTH0_CALLBACK_URL_STAGING\"/" "$WERCKER_REPORT_ARTIFACTS_DIR/staging/$DIST_NAME/conf/application.conf"
+#        sed -i -r "s/(auth0.callbackURL).*/\1=\"$AUTH0_CALLBACK_URL_PRODUCTION\"/" "$WERCKER_REPORT_ARTIFACTS_DIR/production/$DIST_NAME/conf/application.conf"
+deploy:
+  steps:
     - script:
-      name: unzip dist
+      name: copy artifact
       code: |
-        unzip ./target/universal/neta-inbox-*.zip -d "$WERCKER_OUTPUT_DIR/staging"
-        unzip ./target/universal/neta-inbox-*.zip -d "$WERCKER_OUTPUT_DIR/production"
-    - script:
-      name: config files
-      code: |
-        DIST_NAME=`ls ./target/universal/neta-inbox-*.zip | sed "s/.*\/\(neta.*\).zip/\1/"`
-        sed -i -r "s/(auth0.callbackURL).*/\1=\"$AUTH0_CALLBACK_URL_STAGING\"/" "$WERCKER_OUTPUT_DIR/staging/$DIST_NAME/conf/application.conf"
-        sed -i -r "s/(auth0.callbackURL).*/\1=\"$AUTH0_CALLBACK_URL_PRODUCTION\"/" "$WERCKER_OUTPUT_DIR/production/$DIST_NAME/conf/application.conf"
+        chmod +x ./build/upload-to-bitbucket.sh
+        if [[ "$WERCKER_GIT_BRANCH" = "master" ]]; then
+            DEPLOY_FILE_NAME=`ls ./target/universal/neta-inbox-*.zip | sed -r 's/(neta-inbox)-(.*).zip/\1-\2.release.zip/g'`
+            mv ./target/universal/neta-inbox-*.zip $DEPLOY_FILE_NAME
+            ./build/upload-to-bitbucket.sh $BIT_BUCKET_USER $BIT_BUCKET_PASSWORD /daisuke-shimada/neta-inbox/downloads $DEPLOY_FILE_NAME
+        elif [[ "$WERCKER_GIT_BRANCH" = "develop" ]]; then
+            DEPLOY_FILE_NAME=`ls ./target/universal/neta-inbox-*.zip | sed -r 's/(neta-inbox)-(.*).zip/\1-\2.develop.zip/g'`
+            mv ./target/universal/neta-inbox-*.zip $DEPLOY_FILE_NAME
+            ./build/upload-to-bitbucket.sh $BIT_BUCKET_USER $BIT_BUCKET_PASSWORD /daisuke-shimada/neta-inbox/downloads $DEPLOY_FILE_NAME
+        else
+            echo "no deploy"
+        fi
 

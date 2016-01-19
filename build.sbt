@@ -58,15 +58,18 @@ lazy val root = (project in file("."))
     TypescriptKeys.outFile := "app/assets/js/application-all.js",
     includeFilter in TypescriptKeys.typescript := "application.ts",
 
-    pipelineStages := Seq(uglify),
-    UglifyKeys.buildDir := file("app/assets/js/build"),
     UglifyKeys.compressOptions := Seq("warnings=false"),
-    UglifyKeys.uglifyOps := { js => {
-      val target = js.filterNot(_._2.contains("js/build")).filterNot(_._2.endsWith(outputFile)).filter(_._1.isFile)
+    UglifyKeys.uglifyOps := { jsList => {
+      val target = jsList.filterNot(_._2.endsWith(outputFile)).filter(_._1.isFile)
       val (pre, rest) = splitFileList(target, preOrder)
       val (post, middle) = splitFileList(rest, postOrder)
-      Seq((pre ++ middle ++ post, "/../" + outputFile))
-    }}
+      val sortedList = pre ++ middle ++ post
+      Seq((sortedList, "js/" + outputFile))
+    }},
+    pipelineStages := Seq(uglify, filter),
+
+    includeFilter in filter := "*.ts" || "*.sass" || "*.scss" || "*.js",
+    excludeFilter in filter := outputFile
   )
   .enablePlugins(BuildInfoPlugin)
   .settings(
