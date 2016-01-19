@@ -8,6 +8,7 @@ app/assets/js/*.js.map
 !/app/assets/js/plain/*.js
 database/
 dependencies.txt
+wercker_work/
 
 # Ignore Play! working directory #
 bin/
