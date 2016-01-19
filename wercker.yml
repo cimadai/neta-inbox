@@ -29,25 +29,6 @@ build:
       name: sbt dist
       code: |
         sbt web-stage dist
-    - script:
-      name: install unzip
-      code: |
-        apt-get install -y unzip
-#    - script:
-#      name: copy artifact
-#      code: |
-#        cp ./target/universal/neta-inbox-*.zip -d "$WERCKER_REPORT_ARTIFACTS_DIR/"
-#    - script:
-#      name: unzip dist
-#      code: |
-#        unzip ./target/universal/neta-inbox-*.zip -d "$WERCKER_REPORT_ARTIFACTS_DIR/staging"
-#        unzip ./target/universal/neta-inbox-*.zip -d "$WERCKER_REPORT_ARTIFACTS_DIR/production"
-#    - script:
-#      name: config files
-#      code: |
-#        DIST_NAME=`ls ./target/universal/neta-inbox-*.zip | sed "s/.*\/\(neta.*\).zip/\1/"`
-#        sed -i -r "s/(auth0.callbackURL).*/\1=\"$AUTH0_CALLBACK_URL_STAGING\"/" "$WERCKER_REPORT_ARTIFACTS_DIR/staging/$DIST_NAME/conf/application.conf"
-#        sed -i -r "s/(auth0.callbackURL).*/\1=\"$AUTH0_CALLBACK_URL_PRODUCTION\"/" "$WERCKER_REPORT_ARTIFACTS_DIR/production/$DIST_NAME/conf/application.conf"
 deploy:
   steps:
     - script:
