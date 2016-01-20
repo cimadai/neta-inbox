@@ -6,13 +6,15 @@ import com.flyberrycapital.slack.SlackClient
 import dao._
 import helpers.{ChatworkConfig, SlackConfig}
 import net.cimadai.chatwork.ChatworkClient
-import play.api.{Application, GlobalSettings, Logger}
+import play.api.{Play, Application, GlobalSettings, Logger}
 
 object Global extends GlobalSettings {
   private val chatworkClientRef = new AtomicReference[Option[ChatworkClient]](None)
   def chatworkClient = chatworkClientRef.get()
   private val slackClientRef = new AtomicReference[Option[SlackClient]](None)
   def slackClient = slackClientRef.get()
+  private val loginPermittedDomainRef = new AtomicReference[Option[String]](None)
+  def loginPermittedDomain = loginPermittedDomainRef.get()
 
   override def onStart(app: Application): Unit = {
     Logger.info("Play application is starting.")
@@ -37,6 +39,9 @@ object Global extends GlobalSettings {
       slack.readTimeout(5000)
       slackClientRef.set(Some(slack))
     }
+
+    loginPermittedDomainRef.set(Play.current.configuration.getString("login.permitted.domain"))
+    println(loginPermittedDomain)
   }
 
   override def onStop(app: Application): Unit = {

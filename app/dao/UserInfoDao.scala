@@ -1,5 +1,6 @@
 package dao
 
+import _root_.utils.Global
 import dao.utils._
 import DaoBase.UserInfoTable
 import dao.utils.{DatabaseAccessor, DaoCRUDWithId, SchemaAccessible}
@@ -32,20 +33,29 @@ object UserInfoDao extends DaoCRUDWithId[UserInfo, UserInfoTable] with DaoBase w
     )
   }
 
+  private def doLoadUserInfoOrNone(email: String, jsonValue: JsValue)(implicit acc: DatabaseConfig[JdbcProfile]): Option[UserInfo] = {
+    this.findFirstByFilter(_.email === email).fold( {
+      val userInfo = toUserInfo(jsonValue)
+      this.create(userInfo).map(userInfoId => userInfo.copy(id = Some(userInfoId)))
+    } ) { userInfo =>
+      // 必要であれば更新処理
+      this.update(toUserInfo(jsonValue).copy(id = userInfo.id))
+      Some(userInfo)
+    }
+  }
+
   def loadUserInfoOrNone(jsonValue: JsValue)(implicit acc: DatabaseConfig[JdbcProfile]): Option[UserInfo] = {
     val email = (jsonValue \ "email").as[String]
-    if (email.endsWith("gmail.com")) {
-      this.findFirstByFilter(_.email === email).fold( {
-        val userInfo = toUserInfo(jsonValue)
-        this.create(userInfo).map(userInfoId => userInfo.copy(id = Some(userInfoId)))
-      } ) { userInfo =>
-        // 必要であれば更新処理
-        this.update(toUserInfo(jsonValue).copy(id = userInfo.id))
-        Some(userInfo)
-      }
-    } else {
-      // gmail.com以外はダメ。
-      None
+    Global.loginPermittedDomain match {
+      case Some(domain) =>
+        if (email.endsWith(domain)) {
+          doLoadUserInfoOrNone(email, jsonValue)
+        } else {
+          // 指定されたドメイン以外はダメ。
+          None
+        }
+      case None =>
+        doLoadUserInfoOrNone(email, jsonValue)
     }
   }
 }
