@@ -29,24 +29,24 @@ deploy:
       code: |
         export APP_VERSION=`ls ./target/universal/neta-inbox-*.zip | sed -r 's/.*neta-inbox-(.*).zip/\1/g'`
         export SRC_DIR=/var/neta-inbox/
+
         mkdir -p $SRC_DIR/log
         mkdir -p /tmp/output
         unzip ./target/universal/neta-inbox-$APP_VERSION.zip -d /tmp/output
         cp -R /tmp/output/neta-inbox-$APP_VERSION/* $SRC_DIR
         cp ./script/neta_inbox_docker_supervisor.conf /etc/supervisor.conf
         rm -rf /tmp/output
+        rm -rf /pipeline
+
+        # if WERCKER_DEPLOYTARGET_NAME equals "version", push to docker with version tag.
+        if [ "${WERCKER_DEPLOYTARGET_NAME}" = "version" ]; then
+            export DOCKER_TARGET_TAG=$APP_VERSION
+        fi
     - internal/docker-push:
         username: $DOCKER_USERNAME
         password: $DOCKER_PASSWORD
         repository: cimadai/neta-inbox
-        tag: latest
-        ports: "9090"
-        cmd: "/usr/bin/supervisord -c /etc/supervisor.conf"
-    - internal/docker-push:
-        username: $DOCKER_USERNAME
-        password: $DOCKER_PASSWORD
-        repository: cimadai/neta-inbox
-        tag: $APP_VERSION
+        tag: $DOCKER_TARGET_TAG
         ports: "9090"
         cmd: "/usr/bin/supervisord -c /etc/supervisor.conf"
 
