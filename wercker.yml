@@ -4,23 +4,10 @@ build:
     - script:
       name: enable cache
       code: |
-        mkdir -p "$WERCKER_CACHE_DIR/wercker/apt-cache"
-        cp -R /var/cache/apt/archives/* "$WERCKER_CACHE_DIR/wercker/apt-cache"
-        sudo rm -fr /var/cache/apt/archives
-        sudo ln -s "$WERCKER_CACHE_DIR/wercker/apt-cache" /var/cache/apt/archives
-        ls -la /var/cache/apt/
-
-        mkdir -p "$WERCKER_CACHE_DIR/wercker/apt-lists"
-        sudo rm -fr /var/lib/apt/lists
-        sudo ln -s "$WERCKER_CACHE_DIR/wercker/apt-lists" /var/lib/apt/lists
-
         mkdir -p "$WERCKER_CACHE_DIR/wercker/ivy2"
         cp -R ~/.ivy2/* "$WERCKER_CACHE_DIR/wercker/ivy2"
         sudo rm -fr ~/.ivy2
         sudo ln -s "$WERCKER_CACHE_DIR/wercker/ivy2" ~/.ivy2
-
-        mkdir -p "$WERCKER_CACHE_DIR/wercker/npm"
-        npm config set cache "$WERCKER_CACHE_DIR/wercker/npm"
     - script:
       name: sbt test and coverage
       code: |
@@ -29,21 +16,3 @@ build:
       name: sbt dist
       code: |
         sbt web-stage dist
-deploy:
-  steps:
-    - script:
-      name: copy artifact
-      code: |
-        chmod +x ./build/upload-to-bitbucket.sh
-        if [[ "$WERCKER_GIT_BRANCH" = "master" ]]; then
-            DEPLOY_FILE_NAME=`ls ./target/universal/neta-inbox-*.zip | sed -r 's/(neta-inbox)-(.*).zip/\1-\2.release.zip/g'`
-            mv ./target/universal/neta-inbox-*.zip $DEPLOY_FILE_NAME
-            ./build/upload-to-bitbucket.sh $BIT_BUCKET_USER $BIT_BUCKET_PASSWORD /daisuke-shimada/neta-inbox/downloads $DEPLOY_FILE_NAME
-        elif [[ "$WERCKER_GIT_BRANCH" = "develop" ]]; then
-            DEPLOY_FILE_NAME=`ls ./target/universal/neta-inbox-*.zip | sed -r 's/(neta-inbox)-(.*).zip/\1-\2.develop.zip/g'`
-            mv ./target/universal/neta-inbox-*.zip $DEPLOY_FILE_NAME
-            ./build/upload-to-bitbucket.sh $BIT_BUCKET_USER $BIT_BUCKET_PASSWORD /daisuke-shimada/neta-inbox/downloads $DEPLOY_FILE_NAME
-        else
-            echo "no deploy"
-        fi
-

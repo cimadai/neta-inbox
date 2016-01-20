@@ -1,0 +1,28 @@
+# data volume
+neta_data:
+  image: busybox
+  volumes:
+   - /var/neta-inbox/log
+   - /var/neta-inbox/database
+# neta-inbox
+neta:
+  image: cimadai/neta-inbox:develop
+  volumes_from:
+    - neta_data
+  ports:
+    - "9090:9090"
+  expose:
+    - 9090
+  environment:
+    # required
+    AUTH0_CLIENT_SECRET: "your auth0 secret key"
+    AUTH0_CLIENT_ID: "your auth0 client id"
+    AUTH0_DOMAIN: "your auth0 domain"
+    AUTH0_CALLBACK_URL: "your auth0 callback url"
+    LOGIN_PERMITTED_DOMAIN: "gmail.com"
+    # optional
+    CHATWORK_API_KEY: "your chatwork api key"
+    CHATWORK_ROOM_ID: "your chatwork room id"
+    SLACK_API_TOKEN: "slack api token"
+    SLACK_CHANNEL_NAME: "#general"
+
