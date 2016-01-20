@@ -9,6 +9,8 @@ app/assets/js/*.js.map
 database/
 dependencies.txt
 wercker_work/
+output/
+run_docker.sh
 
 # Ignore Play! working directory #
 bin/
