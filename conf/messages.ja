@@ -1,7 +1,7 @@
 app.version = ver {0} (built: {1})
 app.copyright = &copy; 2016 cimadai. MIT License.
 
-title.application = ネタ募集箱（仮）
+title.application = ネタ募集箱
 title.event = ネタリスト
 title.event.edit = ネタ編集
 title.event.view = ネタ詳細

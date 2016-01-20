@@ -53,7 +53,6 @@ lazy val root = (project in file("."))
     javaOptions in Test += "-Dconfig.file=test/conf/test.conf",
     scalaVersion := PROJECT_SCALA_VERSION,
     libraryDependencies ++= librairies,
-    sassOptions in Assets ++= Seq("--compass", "-r", "compass"),
     TypescriptKeys.sourceRoot := "app/assets/js/",
     TypescriptKeys.outFile := "app/assets/js/application-all.js",
     includeFilter in TypescriptKeys.typescript := "application.ts",

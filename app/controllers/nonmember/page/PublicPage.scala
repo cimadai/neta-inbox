@@ -8,6 +8,7 @@ import play.api.mvc.Action
 import play.api.Play.current
 import play.api.i18n.Messages.Implicits._
 import play.cache.Cache
+import utils.Global
 
 object PublicPage extends AuthenticateUtil {
 
@@ -32,7 +33,8 @@ object PublicPage extends AuthenticateUtil {
           Auth0Config.set(newConfig)
           newConfig
         }
-        Ok(views.html.Application.index(request.flash, authConfig))
+
+        Ok(views.html.Application.index(request.flash, authConfig, Global.loginPermittedDomain.getOrElse("")))
     }
   }
 
