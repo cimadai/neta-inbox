@@ -42,10 +42,11 @@ object DaoBase {
     def userInfoIdOrNone = column[Option[Long]]("USER_INFO_ID_OR_NONE")
     def publishDateUnixMillis = column[Long]("PUBLISH_DATE_UNIX_MILLIS")
     def status = column[EventStatus]("STATUS")
+    def duration = column[Long]("DURATION")
 
     def idxTitle = index(s"${tableName}_TITLE", title, unique = false)
 
-    def * = (id.?, eventType, title, description, userInfoIdOrNone, publishDateUnixMillis, status) <> (EventInfo.tupled, EventInfo.unapply)
+    def * = (id.?, eventType, title, description, userInfoIdOrNone, publishDateUnixMillis, status, duration) <> (EventInfo.tupled, EventInfo.unapply)
   }
 
   protected val eventReactionTypeQuery = TableQuery[EventReactionTypeTable]

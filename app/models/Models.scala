@@ -18,7 +18,8 @@ case class EventInfo(
   description: String,
   authorIdOrNone: Option[Long],
   publishDateUnixMillis: Long,
-  status: EventStatus
+  status: EventStatus,
+  duration: Long
 ) extends DatabaseObjectWithId(id)
 
 case class EventReactionType(
@@ -54,11 +55,12 @@ case class EventInfoForForm(
   authorIdOrNone: Option[Long],
   publishDateUnixMillis: Long,
   status: EventStatus,
+  duration: Long,
   tags: List[Long],
   registerMe: Boolean
 ) {
   def toEventInfo: EventInfo = {
-    EventInfo(this.id, this.eventType, this.title, this.description, this.authorIdOrNone, this.publishDateUnixMillis, this.status)
+    EventInfo(this.id, this.eventType, this.title, this.description, this.authorIdOrNone, this.publishDateUnixMillis, this.status, this.duration)
   }
 }
 object EventInfoForForm {
@@ -71,7 +73,7 @@ object EventInfoForForm {
         }
       case _ => false
     }
-    EventInfoForForm(ev.id, ev.eventType, ev.title, ev.description, ev.authorIdOrNone, ev.publishDateUnixMillis, ev.status, List.empty, registerMe)
+    EventInfoForForm(ev.id, ev.eventType, ev.title, ev.description, ev.authorIdOrNone, ev.publishDateUnixMillis, ev.status, ev.duration, List.empty, registerMe)
   }
 }
 case class EventTagGroups(tag: EventTag, eventCount: Int)

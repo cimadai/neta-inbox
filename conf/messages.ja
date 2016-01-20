@@ -1,7 +1,7 @@
 app.version = ver {0} (built: {1})
 app.copyright = &copy; 2016 cimadai. MIT License.
 
-title.application = ネタ募集箱（仮）
+title.application = ネタ募集箱
 title.event = ネタリスト
 title.event.edit = ネタ編集
 title.event.view = ネタ詳細
@@ -15,6 +15,7 @@ general.cancel = キャンセル
 general.delete = 削除
 general.view.detail = 詳細を見る
 general.confirmation = 確認
+general.minute = 分
 
 ui.pagenation.previouspage = &laquo;
 ui.pagenation.nextpage = &raquo;
@@ -29,6 +30,9 @@ event.type = ネタタイプ
 event.title = タイトル
 event.description = 概要
 event.presenter = 発表者
+event.duration = 予定時間
+event.duration.as = {0}分
+event.duration.undefined = 未定
 event.date = 日付
 event.date.undefined = 未定
 event.tag = タグ
@@ -54,10 +58,10 @@ constraint.max = 最大値: {0}
 constraint.maxLength = 最大文字数: {0}
 constraint.email = Eメールアドレスを入力してください。
 
-message.event.updated.chatwork = [info][title]ネタが更新されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]
-message.new.event.created.chatwork = [info][title]新しいネタが登録されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}[/info]
+message.event.updated.chatwork = [info][title]ネタが更新されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\n日時: {3}\n予定時間: {4}\nタグ: {5}\nURL: {6}[/info]
+message.new.event.created.chatwork = [info][title]新しいネタが登録されました[/title]発表者: {0}\nタイトル: {1}\n概要: {2}\n日時: {3}\n予定時間: {4}\nタグ: {5}\nURL: {6}[/info]
 
-message.event.updated.slack = ネタが更新されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}```
-message.new.event.created.slack = 新しいネタが登録されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\nタグ: {3}\nURL: {4}```
+message.event.updated.slack = ネタが更新されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\n日時: {3}\n予定時間: {4}\nタグ: {5}\nURL: {6}```
+message.new.event.created.slack = 新しいネタが登録されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\n日時: {3}\n予定時間: {4}\nタグ: {5}\nURL: {6}```
 
 message.delete.confirmation.of.event = {0} を削除してもよろしいですか？<br/>削除を実行すると「聞きたい」も消え、取り消すことはできません。

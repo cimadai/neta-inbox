@@ -2,7 +2,7 @@ import scala.collection.mutable.ArrayBuffer
 
 name := "neta-inbox"
 
-version := "0.1.2.1"
+version := "0.1.4.0"
 
 val PROJECT_SCALA_VERSION = "2.11.7"
 
@@ -19,11 +19,14 @@ lazy val librairies = Seq(
   cache,
   ws,
   "com.h2database" % "h2" % "1.4.177",
-  "com.typesafe.play" %% "play-slick" % "1.0.0",
+  "com.typesafe.play" %% "play-slick" % "1.0.1",
+  "com.typesafe.play" %% "play-slick-evolutions" % "1.0.1",
   "org.julienrf" %% "play-jsmessages" % "2.0.0",
   "net.cimadai" %% "chatwork-scala" % "1.0.1",
   "com.typesafe.play" %% "play-json" % "2.4.4",
-  "com.flyberrycapital" %% "scala-slack" % "0.3.0-SNAPSHOT"
+  "com.flyberrycapital" %% "scala-slack" % "0.3.0",
+  "org.scalatest" %% "scalatest" % "2.2.1" % "test",
+  "org.scalatestplus" %% "play" % "1.4.0-M3" % "test"
 )
 
 val preOrder = Iterable("plain/jquery-1.11.3.min.js", "plain/jquery-migrate-1.2.1.min.js", "plain/moment.min.js")
@@ -47,22 +50,25 @@ def splitFileList(files: Seq[(File, String)], keys: Iterable[String]): (Seq[(Fil
 lazy val root = (project in file("."))
   .enablePlugins(PlayScala, SbtWeb)
   .settings(
+    javaOptions in Test += "-Dconfig.file=test/conf/test.conf",
     scalaVersion := PROJECT_SCALA_VERSION,
     libraryDependencies ++= librairies,
-    sassOptions in Assets ++= Seq("--compass", "-r", "compass"),
     TypescriptKeys.sourceRoot := "app/assets/js/",
     TypescriptKeys.outFile := "app/assets/js/application-all.js",
     includeFilter in TypescriptKeys.typescript := "application.ts",
 
-    pipelineStages := Seq(uglify),
-    UglifyKeys.buildDir := file("app/assets/js/build"),
     UglifyKeys.compressOptions := Seq("warnings=false"),
-    UglifyKeys.uglifyOps := { js => {
-      val target = js.filterNot(_._2.contains("js/build")).filterNot(_._2.endsWith(outputFile)).filter(_._1.isFile)
+    UglifyKeys.uglifyOps := { jsList => {
+      val target = jsList.filterNot(_._2.endsWith(outputFile)).filter(_._1.isFile)
       val (pre, rest) = splitFileList(target, preOrder)
       val (post, middle) = splitFileList(rest, postOrder)
-      Seq((pre ++ middle ++ post, "/../" + outputFile))
-    }}
+      val sortedList = pre ++ middle ++ post
+      Seq((sortedList, "js/" + outputFile))
+    }},
+    pipelineStages := Seq(uglify, filter),
+
+    includeFilter in filter := "*.ts" || "*.sass" || "*.scss" || "*.js",
+    excludeFilter in filter := outputFile
   )
   .enablePlugins(BuildInfoPlugin)
   .settings(

@@ -2,20 +2,25 @@ package controllers.utils
 
 import controllers.BaseController
 import models.UserInfo
+import play.api.Logger
 import play.api.Play.current
 import play.api.cache.Cache
 import play.api.mvc._
 
 
 trait AuthenticateUtil extends BaseController with JsonResponsible {
+  val accessLogger = Logger("access")
 
   def AuthenticatedAction(f: Request[AnyContent] => Result): Action[AnyContent] = {
     Action { implicit request =>
       (request.session.get("idToken").flatMap { idToken =>
         Cache.getAs[UserInfo](idToken + "profile")
       } map { profile =>
+        val accessToken = request.session.get("accessToken").getOrElse("unknown")
+        accessLogger.info(s"<AuthenticateUtil> Logged in access.\taccessToken:$accessToken\trequestUri:${request.uri}")
         f(request)
       }).orElse {
+        accessLogger.info(s"<AuthenticateUtil> Not logged in.\trequestUri:${request.uri}")
         if (isAjax) {
           // Apiで認証エラーが発生した場合はトップページに戻す
           Some(renderJsonError().withHeaders(

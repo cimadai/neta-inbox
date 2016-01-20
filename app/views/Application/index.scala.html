@@ -1,7 +1,7 @@
 @import base._
 @import helpers.Auth0Config
 
-@(flash: Flash, config: Auth0Config)(implicit m: Messages)
+@(flash: Flash, config: Auth0Config, loginPermittedDomain: String)(implicit m: Messages)
 
 @title = @{m("title.application")}
 @sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(None)}
@@ -20,7 +20,7 @@
                 <h1>@m("login.title")</h1>
                 <hr>
                 <p>@m("login.message1")</p>
-                <p>@m("login.message2")</p>
+                <p>@m("login.message2", loginPermittedDomain)</p>
                 <div class="login-box auth0-box before">
                     <a class="btn btn-primary btn-xl btn-login">Log in</a>
                 </div>

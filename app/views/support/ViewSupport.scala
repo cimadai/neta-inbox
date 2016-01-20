@@ -1,15 +1,14 @@
 package views.support
 
-import java.util.Date
-
-import org.joda.time.{DateTime, Duration}
+import org.joda.time.format.DateTimeFormat
+import org.joda.time.{DateTime, DateTimeZone}
 import play.api.data.Field
-import play.api.i18n.Messages
 import play.twirl.api.Html
 import utils.TextUtil
 
 /**
-  */
+ * View supports
+ */
 object ViewSupport {
 	def attributes(attrs: Seq[(Symbol, String)]): Html =
 		Html(
@@ -51,7 +50,8 @@ object ViewSupport {
 
 	def formatDateTimeOrDefault(millis: Long, default: String): String = {
 		if (millis > 0) {
-			"%tY/%<tm/%<td %<tR" format new Date(millis)
+			val dt = new DateTime(millis).withZone(DateTimeZone.forID("Asia/Tokyo"))
+			DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss").print(dt)
 		} else {
 			default
 		}

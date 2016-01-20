@@ -238,6 +238,7 @@ $color-white: #fff;
   .event-id { width: 2em; }
   .event-presenter { width: 8em; }
   .event-date { width: 10em; }
+  .event-duration { width: 6em; }
   .event-tag { width: 15em; }
   .event-operate { width: 6em; }
 }
@@ -252,3 +253,6 @@ $color-white: #fff;
   h6 { display: inline-block; }
 }
 
+.time-duration {
+  width: 8em;
+}
