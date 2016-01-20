@@ -6,13 +6,21 @@ build:
       code: |
         mkdir -p "$WERCKER_CACHE_DIR/wercker/ivy2"
         cp -R ~/.ivy2/* "$WERCKER_CACHE_DIR/wercker/ivy2"
-        sudo rm -fr ~/.ivy2
-        sudo ln -s "$WERCKER_CACHE_DIR/wercker/ivy2" ~/.ivy2
+        rm -fr ~/.ivy2
+        ln -s "$WERCKER_CACHE_DIR/wercker/ivy2" ~/.ivy2
+        curl -kL https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
+        pip install --user codecov
+        export PATH=$PATH:~/.local/bin/
     - script:
       name: sbt test and coverage
       code: |
         sbt coverage test coverageReport
     - script:
+      name: post coverage to codecov
+      code: |
+        codecov -t $CODECOV_TOKEN
+    - script:
       name: sbt dist
       code: |
         sbt web-stage dist
+
