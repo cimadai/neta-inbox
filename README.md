@@ -1,4 +1,4 @@
-# Neta Inbox
+# Neta Inbox [![wercker status](https://app.wercker.com/status/f47b85fae6b41b5fc944a0a1d282cb61/s "wercker status")](https://app.wercker.com/project/bykey/f47b85fae6b41b5fc944a0a1d282cb61)
 
 This is idea box with voting feature.
 
