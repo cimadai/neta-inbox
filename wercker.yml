@@ -1,5 +1,5 @@
-box: cimadai/sbt_all_in_one
 build:
+  box: cimadai/neta-inbox-all-in-one
   steps:
     - script:
       name: enable cache
@@ -8,9 +8,6 @@ build:
         cp -R ~/.ivy2/* "$WERCKER_CACHE_DIR/wercker/ivy2"
         rm -fr ~/.ivy2
         ln -s "$WERCKER_CACHE_DIR/wercker/ivy2" ~/.ivy2
-        curl -kL https://raw.github.com/pypa/pip/master/contrib/get-pip.py | python
-        pip install --user codecov
-        export PATH=$PATH:~/.local/bin/
     - script:
       name: sbt test and coverage
       code: |
@@ -18,9 +15,38 @@ build:
     - script:
       name: post coverage to codecov
       code: |
+        export PATH=$PATH:~/.local/bin/
         codecov -t $CODECOV_TOKEN
     - script:
       name: sbt dist
       code: |
         sbt web-stage dist
+        APP_VERSION=`ls ./target/universal/neta-inbox-*.zip | sed -r 's/.*neta-inbox-(.*).zip/\1/g'`
+        unzip ./target/universal/neta-inbox-$APP_VERSION.zip -d $WERCKER_OUTPUT_DIR/
+        cp ./script/neta_inbox_docker_supervisor.conf $WERCKER_OUTPUT_DIR/
+deploy:
+  box: cimadai/neta-inbox-base
+  steps:
+    - script:
+      name: prepare environment
+      code: |
+        export APP_VERSION=`ls $WERCKER_OUTPUT_DIR/neta-inbox-* | sed -r 's/.*neta-inbox-(.*)/\1/g'`
+        export SRC_DIR=/var/neta-inbox/
+        RUN mkdir -p $SRC_DIR/log
+        COPY $WERCKER_OUTPUT_DIR/neta-inbox-$APP_VERSION/* $SRC_DIR
+        COPY $WERCKER_OUTPUT_DIR/neta_inbox_docker_supervisor.conf /etc/supervisor.conf
+    - internal/docker-push:
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
+        repository: cimadai/neta-inbox
+        tag: latest
+        ports: "9090"
+        cmd: "/usr/bin/supervisord -c /etc/supervisor.conf"
+    - internal/docker-push:
+        username: $DOCKER_USERNAME
+        password: $DOCKER_PASSWORD
+        repository: cimadai/neta-inbox
+        tag: $APP_VERSION
+        ports: "9090"
+        cmd: "/usr/bin/supervisord -c /etc/supervisor.conf"
 
