@@ -1,4 +1,6 @@
-# Neta Inbox [![wercker status](https://app.wercker.com/status/f47b85fae6b41b5fc944a0a1d282cb61/s "wercker status")](https://app.wercker.com/project/bykey/f47b85fae6b41b5fc944a0a1d282cb61) [![codecov.io](https://codecov.io/bitbucket/daisuke-shimada/neta-inbox/coverage.svg?branch=master)](https://codecov.io/bitbucket/daisuke-shimada/neta-inbox?branch=master)
+# Neta Inbox
+[![wercker status](https://app.wercker.com/status/5ccc726764ceacfda127e8522af4f6f0/s "wercker status")](https://app.wercker.com/project/bykey/5ccc726764ceacfda127e8522af4f6f0)
+[![codecov.io](https://codecov.io/github/cimadai/neta-inbox/coverage.svg?branch=master)](https://codecov.io/github/cimadai/neta-inbox?branch=master)
 
 This is idea box with voting feature.
 
