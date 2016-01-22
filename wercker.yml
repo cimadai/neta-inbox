@@ -1,3 +1,10 @@
+dev:
+  box: cimadai/neta-inbox-all-in-one
+  steps:
+    - script:
+      name: show env
+      code: |
+        env
 build:
   box: cimadai/neta-inbox-all-in-one
   steps:

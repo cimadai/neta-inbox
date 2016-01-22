@@ -206,7 +206,7 @@ object EventPage extends AuthenticateUtil {
     val tags = EventTagRelationDao.findTagsByEventInfoId(eventId).map(_.text).mkString(",")
     val url =
       if (Play.isProd) {
-        Auth0Config.get().callbackURL.replace("/callback", controllers.member.page.routes.EventPage.view(eventId).url)
+        s"${Auth0Config.get().baseURL}${controllers.member.page.routes.EventPage.view(eventId).url}"
       } else {
         controllers.member.page.routes.EventPage.view(eventId).absoluteURL()
       }
