@@ -19,14 +19,6 @@ object Global extends GlobalSettings {
   override def onStart(app: Application): Unit = {
     Logger.info("Play application is starting.")
 
-    UserInfoDao.createDDL.statements.foreach(println(_))
-    EventInfoDao.createDDL.statements.foreach(println(_))
-    EventReactionTypeDao.createDDL.statements.foreach(println(_))
-    EventReactionDao.createDDL.statements.foreach(println(_))
-    EventTagDao.createDDL.statements.foreach(println(_))
-    EventTagRelationDao.createDDL.statements.foreach(println(_))
-    EventTagRelationDao.createDDL.statements.foreach(println(_))
-
     val config = ChatworkConfig.get()
     if (config.apiKey.nonEmpty) {
       chatworkClientRef.set(Some(new ChatworkClient(config.apiKey)))
@@ -41,7 +33,6 @@ object Global extends GlobalSettings {
     }
 
     loginPermittedDomainRef.set(Play.current.configuration.getString("login.permitted.domain"))
-    println(loginPermittedDomain)
   }
 
   override def onStop(app: Application): Unit = {

@@ -43,8 +43,13 @@ object PublicPage extends AuthenticateUtil {
       Cache.remove(idToken+ "profile")
     }
 
-    val rootUrl = controllers.nonmember.page.routes.PublicPage.index().absoluteURL(request.secure)
-    Redirect(s"https://cimadai.au.auth0.com/v2/logout?returnTo=$rootUrl")
+    val authConfig = Auth0Config.get()
+    val rootUrl = if (Play.isProd) {
+      authConfig.baseURL
+    } else {
+      controllers.nonmember.page.routes.PublicPage.index().absoluteURL(request.secure)
+    }
+    Redirect(s"https://${authConfig.domain}/v2/logout?returnTo=$rootUrl")
   }
 
 }

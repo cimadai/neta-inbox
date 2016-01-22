@@ -1,55 +1,22 @@
 package controllers
 
-import _root_.utils.SpecsCommon
-import dao._
-import dao.utils.DatabaseAccessor.jdbcProfile.api._
-import org.scalatest.BeforeAndAfter
+import _root_.utils.{FakeLoginController, SpecsCommon}
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
-import play.api.cache.Cache
 import play.api.db.slick.DatabaseConfigProvider
-import play.api.mvc._
 import play.api.test.Helpers._
 import play.api.test.{FakeApplication, FakeRequest}
 import slick.driver.JdbcProfile
+import FakeLoginController.FakeRequestExtension
 
-class LoginSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with SpecsCommon {
+class DevModeSpec extends PlaySpec with OneServerPerSuite with SpecsCommon {
 
-  implicit override lazy val app = FakeApplication(additionalConfiguration = inMemoryDatabase("play"))
+  private val configurations = inMemoryDatabase("play")
+  implicit override lazy val app = FakeApplication(additionalConfiguration = configurations)
   implicit override lazy val dbConfig = DatabaseConfigProvider.get[JdbcProfile](app)
   implicit override lazy val db = dbConfig.db
 
-  private val DUMMY_TOKEN = "dummy-token"
-
-  private def getFirstUser = UserInfoDao.findFirstByFilter(_.id > 0L).get
-
-  private def getFirstEvent = EventInfoDao.findFirstByFilter(_.id > 0L).get
-
-  private def getFirstReactionType = EventReactionTypeDao.findFirstByFilter(_.id > 0L).get
-
-  object TestController extends Controller {
-    def login() = Action {
-      Cache.set(DUMMY_TOKEN + "profile", getFirstUser)
-      Ok("ok")
-    }
-  }
-
-  before {
-    createTablesIfNeeded()
-    truncateDatabases()
-    setupData()
-  }
-
-  implicit class FakeRequestExtension(request: FakeRequest[AnyContentAsEmpty.type]) {
-    def withDummyToken() = {
-      request.withSession("idToken" -> DUMMY_TOKEN)
-    }
-    def withXHR() = {
-      request.withHeaders("X-Requested-With" -> "XMLHttpRequest")
-    }
-  }
-
   def getLoginRequiredMethods = {
-    val eventId = getFirstEvent.id.get
+    val eventId = SpecsCommon.getFirstEvent.id.get
     Iterable(
       controllers.member.page.User.index(),
       controllers.member.page.EventPage.listAll(1, 10),
@@ -63,8 +30,8 @@ class LoginSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with
   }
 
   def getLoginAndAjaxRequiredMethods = {
-    val eventId = getFirstEvent.id.get
-    val reactionId = getFirstReactionType.id.get
+    val eventId = SpecsCommon.getFirstEvent.id.get
+    val reactionId = SpecsCommon.getFirstReactionType.id.get
     Iterable(
       controllers.member.api.EventTagApi.addTag(""),
       controllers.member.api.EventTagApi.getAllTags,
@@ -73,6 +40,19 @@ class LoginSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with
   }
 
   "Non-authenticate user" should {
+    "show default page without login" in {
+      val result = controllers.nonmember.page.PublicPage.index.apply(FakeRequest())
+      status(result) mustBe OK
+    }
+
+    "show default page with login" in {
+      FakeLoginController.login.apply(FakeRequest())
+      val result = controllers.nonmember.page.PublicPage.index.apply(FakeRequest().withDummyToken())
+      status(result) mustBe SEE_OTHER
+      val url = controllers.member.page.routes.EventPage.listAll(1, 10).url
+      header("location", result) mustBe Some(url)
+    }
+
     "must redirect to top page without login" in {
       getLoginRequiredMethods.foreach(action => {
         val result = action.apply(FakeRequest().withDummyToken())
@@ -81,7 +61,7 @@ class LoginSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with
     }
 
     "must return 200 with login" in {
-      TestController.login().apply(FakeRequest())
+      FakeLoginController.login.apply(FakeRequest())
       getLoginRequiredMethods.foreach(action => {
         val result = action.apply(FakeRequest().withDummyToken())
         status(result) mustBe OK
@@ -96,7 +76,7 @@ class LoginSpec extends PlaySpec with BeforeAndAfter with OneServerPerSuite with
     }
 
     "required login (ajax method)" in {
-      TestController.login().apply(FakeRequest())
+      FakeLoginController.login.apply(FakeRequest())
       getLoginAndAjaxRequiredMethods.foreach(action => {
         val result = action.apply(FakeRequest().withXHR().withDummyToken())
         header("X-AJAX-REDIRECT", result).isEmpty mustBe true
