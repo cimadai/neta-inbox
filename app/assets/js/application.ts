@@ -46,6 +46,7 @@ $(function () {
             $btn.removeClass("btn-default").addClass("btn-info");
         }
     }
+
     $(".event-reaction").click(function (ev: BaseJQueryEventObject) {
         ev.preventDefault();
         var $btn = $(this);
