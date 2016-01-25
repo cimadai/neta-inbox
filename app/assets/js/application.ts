@@ -39,10 +39,18 @@ $(function () {
         Api.Event.searchEvent($(this).parent().siblings("input").val());
     });
 
+    function toggleReactionButtonClass($btn) {
+        if ($btn.is(".btn-info")) {
+            $btn.removeClass("btn-info").addClass("btn-default");
+        } else {
+            $btn.removeClass("btn-default").addClass("btn-info");
+        }
+    }
     $(".event-reaction").click(function (ev: BaseJQueryEventObject) {
         ev.preventDefault();
         var $btn = $(this);
         Api.Event.toggleEventReaction($btn.data("eventId"), $btn.data("reactionTypeId"), function (json) {
+            toggleReactionButtonClass($btn);
             $btn.find(".badge").text(json.reactions.length);
             var $reactionsArea = $btn.siblings(".reactions");
             $reactionsArea.empty();

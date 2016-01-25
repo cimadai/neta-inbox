@@ -1,4 +1,10 @@
-@(ev: EventInfo, reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag], authorOrNoe: Option[UserInfo])(implicit m: Messages)
+@(userInfoOrNone: Option[UserInfo], ev: EventInfo, reactions: Iterable[EventReactionUserAndReactionType], tags: Iterable[EventTag], authorOrNoe: Option[UserInfo])(implicit m: Messages)
+@btnAdditionalClass = @{
+    reactions.find(_.userInfoOrNone.exists(_.id == userInfoOrNone.map(_.id).getOrElse(None))) match {
+        case Some(_) => "btn-info"
+        case _ => "btn-default"
+    }
+}
 @maxDisplayNum = @{6}
 <tr @if(authorOrNoe.isEmpty){ class="danger" }>
     <td>@ev.id.get</td>
@@ -18,7 +24,7 @@
         </div>
     </td>
     <td>
-        <span class="btn btn-info event-reaction" data-event-id="@ev.id" data-reaction-type-id="1"> @m("event.want.to.listen")
+        <span class="btn event-reaction @btnAdditionalClass" data-event-id="@ev.id" data-reaction-type-id="1"> @m("event.want.to.listen")
             <i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<span class="badge">@reactions.size</span>
         </span>
         <div class="reactions">
