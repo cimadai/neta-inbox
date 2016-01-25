@@ -8,12 +8,15 @@ object EventApi extends AuthenticateUtil {
 
   import models.JsonModelWriterImplicits._
 
+  val MAX_REACTION_DISPLAY = 6
+
   def toggleReaction(eventId: Long, reactionTypeId: Long) = AuthenticatedAction { implicit request =>
     onAjax {
       withUserInfo { userInfo =>
         EventReactionDao.toggleReaction(userInfo.id.get, eventId, reactionTypeId)
         val reactions = EventReactionDao.findByEventInfoId(eventId)
         renderJsonOk(Json.obj(
+          "maxNum" -> MAX_REACTION_DISPLAY,
           "reactions" -> reactions.map(reaction => Json.toJson(reaction))
         ))
       }
