@@ -1,0 +1,17 @@
+@import base._
+
+@(flash: Flash, userInfoOrNone: Option[UserInfo])(implicit m: Messages)
+
+@title = @{m("title.event.view")}
+@sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
+@scripts = @{Html("")}
+
+@fluid_main(flash, title, userInfoOrNone, sidebar, scripts) {
+    <div class="row">
+        <div class="col-md-8 main-container not-found">
+            <span>@m("message.event.not_found")</span>
+            <img src="@routes.Assets.at("images/mizaru.jpg")"/>
+        </div>
+    </div>
+
+}

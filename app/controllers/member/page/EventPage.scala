@@ -3,6 +3,7 @@ package controllers.member.page
 import _root_.utils.Global
 import controllers.utils.AuthenticateUtil
 import controllers.validator.CustomConstraints
+import dao.utils.DaoBase.EventInfoTable
 import dao.utils.DatabaseAccessor
 import DatabaseAccessor.jdbcProfile.api._
 import dao._
@@ -19,6 +20,7 @@ import play.api.mvc.{AnyContent, Request, Result}
 object EventPage extends AuthenticateUtil {
 
   object ListType extends Enumeration { val All, Assigned, NotAssigned = Value }
+  object EventPublishType extends Enumeration { val All, InPast, InFuture = Value }
 
   val eventForm = Form {
     mapping(
@@ -35,25 +37,48 @@ object EventPage extends AuthenticateUtil {
     )(EventInfoForForm.apply)(EventInfoForForm.unapply)
   }
 
-  private def getList(page: Int, size: Int, listType: ListType.Value, searchTagOrNone: Option[EventTag] = None, queryOrNone: Option[String] = None)(implicit request: Request[AnyContent]): Result = {
+  private def genPublishDateFilter(ev: (EventInfoTable), publishType: EventPublishType.Value): Rep[Boolean] = {
+    publishType match {
+      case EventPublishType.All =>
+        true
+      case EventPublishType.InPast =>
+        ev.status === EventStatus.Done.value
+      case EventPublishType.InFuture =>
+        ev.status === EventStatus.New.value
+    }
+  }
+  private def genPublishDateFilter(ev: (EventInfoTable, Rep[Int]), publishType: EventPublishType.Value): Rep[Boolean] = {
+    genPublishDateFilter(ev._1, publishType)
+  }
+  private def getList(page: Int, size: Int, listType: ListType.Value, publishType: EventPublishType.Value, searchTagOrNone: Option[EventTag] = None, queryOrNone: Option[String] = None)(implicit request: Request[AnyContent]): Result = {
     val (events, numPages) = listType match {
       case ListType.All =>
         searchTagOrNone match {
           case Some(searchTag) =>
             val eventIds = EventTagRelationDao.findByFilter(_.eventTagId === searchTag.id.get).map(_.eventInfoId)
-            EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.id inSet eventIds)(page, size)
+            EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(ev => {
+              genPublishDateFilter(ev, publishType) && (ev._1.id inSet eventIds)
+            })(page, size)
           case _ =>
             queryOrNone match {
               case Some(query) =>
-                EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.title.toUpperCase like s"%${query.toUpperCase}%")(page, size)
+                EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(ev => {
+                  genPublishDateFilter(ev, publishType) && (ev._1.title.toUpperCase like s"%${query.toUpperCase}%")
+                })(page, size)
               case _ =>
-                EventInfoDao.getPaginationAndNumPagesWithReactionNum(page, size)
+                EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(ev => {
+                  genPublishDateFilter(ev, publishType)
+                })(page, size)
             }
         }
       case ListType.Assigned =>
-        EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.userInfoIdOrNone.isDefined)(page, size)
+        EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(ev => {
+          genPublishDateFilter(ev, publishType) && ev._1.userInfoIdOrNone.isDefined
+        })(page, size)
       case ListType.NotAssigned =>
-        EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(_._1.userInfoIdOrNone.isEmpty)(page, size)
+        EventInfoDao.getPaginationAndNumPagesWithReactionNumByFilter(ev => {
+          genPublishDateFilter(ev, publishType) && ev._1.userInfoIdOrNone.isEmpty
+        })(page, size)
     }
 
     val eventWithReactions = events.map({eventWithNumReactions =>
@@ -64,37 +89,42 @@ object EventPage extends AuthenticateUtil {
       EventInfoWithReaction(ev, authorOrNone, reactions, tags)
     })
 
-    val assignedNum = EventInfoDao.getSizeOfUserAssigned()
-    val notAssignedNum = EventInfoDao.getSizeOfUserNotAssigned()
+    val assignedNum = EventInfoDao.countByFilter(ev => { genPublishDateFilter(ev, EventPublishType.InFuture) && ev.userInfoIdOrNone.isDefined })
+    val notAssignedNum = EventInfoDao.countByFilter(ev => { genPublishDateFilter(ev, EventPublishType.InFuture) && ev.userInfoIdOrNone.isEmpty })
+    val pastEventNum = EventInfoDao.countByFilter(ev => { genPublishDateFilter(ev, EventPublishType.InPast) })
 
-    Ok(views.html.event.list(request.flash, getUserInfoOrNone, eventWithReactions, assignedNum, notAssignedNum, searchTagOrNone, queryOrNone)(page, size, numPages))
+    Ok(views.html.event.list(request.flash, getUserInfoOrNone, eventWithReactions, assignedNum, notAssignedNum, pastEventNum, searchTagOrNone, queryOrNone)(page, size, numPages))
   }
 
   def listAll(page: Int, size: Int) = AuthenticatedAction { implicit request =>
-    getList(page, size, ListType.All)
+    getList(page, size, ListType.All, EventPublishType.InFuture)
   }
 
   def listAssigned(page: Int, size: Int) = AuthenticatedAction { implicit request =>
-    getList(page, size, ListType.Assigned)
+    getList(page, size, ListType.Assigned, EventPublishType.InFuture)
   }
 
   def listNotAssigned(page: Int, size: Int) = AuthenticatedAction { implicit request =>
-    getList(page, size, ListType.NotAssigned)
+    getList(page, size, ListType.NotAssigned, EventPublishType.InFuture)
+  }
+
+  def listAllPast(page: Int, size: Int) = AuthenticatedAction { implicit request =>
+    getList(page, size, ListType.All, EventPublishType.InPast)
   }
 
   def listSearch(tag: String, query: String, page: Int, size: Int) = AuthenticatedAction { implicit request =>
     if (!tag.isEmpty) {
       EventTagDao.findByTagName(tag) match {
         case Some(eventTag) =>
-          getList(page, size, ListType.All, Some(eventTag))
+          getList(page, size, ListType.All, EventPublishType.All, Some(eventTag))
         case _ =>
-          Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0, None, Some(query))(page, size, 0))
+          Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0, 0, None, Some(query))(page, size, 0))
       }
     } else {
       if (!query.isEmpty) {
-        getList(page, size, ListType.All, None, Some(query))
+        getList(page, size, ListType.All, EventPublishType.All, None, Some(query))
       } else {
-        Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0, None, Some(query))(page, size, 0))
+        Ok(views.html.event.list(request.flash, getUserInfoOrNone, Iterable.empty, 0, 0, 0, None, Some(query))(page, size, 0))
       }
     }
   }
@@ -108,7 +138,8 @@ object EventPage extends AuthenticateUtil {
         val tags = EventTagRelationDao.findTagsByEventInfoId(eventId)
         val reactions = EventReactionDao.findByEventInfoId(event.id.get)
         Ok(views.html.event.view(request.flash, Some(userInfo), eventInfo, reactions, authorOrNone, tags, eventForm.fill(event)))
-      case _ => NotFound("")
+      case _ =>
+        Ok(views.html.event.notfound(request.flash, Some(userInfo)))
     }
   }
 
@@ -120,7 +151,7 @@ object EventPage extends AuthenticateUtil {
       "",
       None,
       0,
-      EventStatus.New,
+      EventStatus.New.value,
       0,
       List.empty,
       registerMe = true

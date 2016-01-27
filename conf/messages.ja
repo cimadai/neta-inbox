@@ -41,6 +41,7 @@ event.no.user = 未定
 event.user.assigned = 発表者割当済みのネタ
 event.user.not.assigned = 発表者未割当のネタ
 event.user.all = すべてのネタ
+event.in.past = 過去のネタ
 event.add = 新しいネタを登録する
 event.registerMe = このネタを自分で発表する。
 event.description.placeholder = ネタに関する概要を入力してください。
@@ -65,3 +66,5 @@ message.event.updated.slack = ネタが更新されました\n```発表者: {0}\
 message.new.event.created.slack = 新しいネタが登録されました\n```発表者: {0}\nタイトル: {1}\n概要: {2}\n日時: {3}\n予定時間: {4}\nタグ: {5}\nURL: {6}```
 
 message.delete.confirmation.of.event = {0} を削除してもよろしいですか？<br/>削除を実行すると「聞きたい」も消え、取り消すことはできません。
+
+message.event.not_found = お探しのネタは見つかりませんでした。

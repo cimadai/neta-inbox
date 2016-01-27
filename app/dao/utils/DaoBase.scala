@@ -33,7 +33,6 @@ object DaoBase {
   }
 
   implicit val eventTypeColumnMap = MappedColumnType.base[EventType, Int](_.value, EventType.valueOf(_).getOrElse(EventType.None) )
-  implicit val statusColumnMap = MappedColumnType.base[EventStatus, Int](_.value, EventStatus.valueOf(_).getOrElse(EventStatus.New) )
   protected val eventInfoQuery = TableQuery[EventInfoTable]
   class EventInfoTable(tag: Tag) extends TableWithId[EventInfo](tag, "EVENT_INFOS") {
     def eventType = column[EventType]("EVENT_TYPE")
@@ -41,7 +40,7 @@ object DaoBase {
     def description = column[String]("DESCRIPTION")
     def userInfoIdOrNone = column[Option[Long]]("USER_INFO_ID_OR_NONE")
     def publishDateUnixMillis = column[Long]("PUBLISH_DATE_UNIX_MILLIS")
-    def status = column[EventStatus]("STATUS")
+    def status = column[Int]("STATUS")
     def duration = column[Long]("DURATION")
 
     def idxTitle = index(s"${tableName}_TITLE", title, unique = false)

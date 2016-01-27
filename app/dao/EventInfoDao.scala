@@ -19,11 +19,14 @@ object EventInfoDao extends DaoCRUDWithId[EventInfo, EventInfoTable] with DaoBas
 
   override def createDDL = baseQuery.schema.create
 
-  def getSizeOfUserAssigned()(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+  def getSizeOfUserAssigned(filter: ((EventInfoTable, Rep[Int])) => Rep[Boolean])(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
     countByFilter(_.userInfoIdOrNone.isDefined)
   }
-  def getSizeOfUserNotAssigned()(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+  def getSizeOfUserNotAssigned(filter: ((EventInfoTable, Rep[Int])) => Rep[Boolean])(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
     countByFilter(_.userInfoIdOrNone.isEmpty)
+  }
+  def getSizeOfAll(filter: (EventInfoTable) => Rep[Boolean])(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+    countByFilter(filter)
   }
 
   private def generateQueryWithReactionNum(): Query[(EventInfoTable, Rep[Int]), (EventInfo, Int), Seq] = {
@@ -51,7 +54,7 @@ object EventInfoDao extends DaoCRUDWithId[EventInfo, EventInfoTable] with DaoBas
     getPaginationAndNumPages(generateQueryWithReactionNum(), pageNum, sizeNum)
   }
 
-  def getPaginationAndNumPagesWithReactionNumByFilter[V <: Rep[Boolean]](filter: ((EventInfoTable, Rep[Int])) => V)(pageNum: Int, sizeNum: Int)
+  def getPaginationAndNumPagesWithReactionNumByFilter(filter: ((EventInfoTable, Rep[Int])) => Rep[Boolean])(pageNum: Int, sizeNum: Int)
       (implicit acc: DatabaseConfig[JdbcProfile]): (Iterable[(EventInfo, Int)], Int) = {
     getPaginationAndNumPages(generateQueryWithReactionNum().filter(filter), pageNum, sizeNum)
   }

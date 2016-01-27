@@ -8,6 +8,12 @@
 @title = @{m("title.event.view")}
 @sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
 @scripts = @{Html("")}
+@btnAdditionalClass = @{
+    reactions.find(_.userInfoOrNone.exists(_.id == userInfoOrNone.map(_.id).getOrElse(None))) match {
+        case Some(_) => "btn-info"
+        case _ => "btn-default"
+    }
+}
 
 @fluid_main(flash, title, userInfoOrNone, sidebar, scripts) {
     @form_error(form)
@@ -57,7 +63,7 @@
             @form_group_html("") {
                 <div class="row">
                     <div class="col-md-6">
-                        <span class="btn btn-info event-reaction" data-event-id="@event.id" data-reaction-type-id="1"> @m("event.want.to.listen")
+                        <span class="btn event-reaction @btnAdditionalClass" data-event-id="@event.id" data-reaction-type-id="1"> @m("event.want.to.listen")
                             <i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;<span class="badge">@reactions.size</span>
                         </span>
                         <div class="reactions detail-reactions">
