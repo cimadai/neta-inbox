@@ -9,13 +9,6 @@ build:
   box: cimadai/neta-inbox-all-in-one
   steps:
     - script:
-      name: enable cache
-      code: |
-        mkdir -p "$WERCKER_CACHE_DIR/wercker/ivy2"
-        cp -R ~/.ivy2/* "$WERCKER_CACHE_DIR/wercker/ivy2"
-        rm -fr ~/.ivy2
-        ln -s "$WERCKER_CACHE_DIR/wercker/ivy2" ~/.ivy2
-    - script:
       name: sbt test and coverage
       code: |
         sbt coverage test coverageReport
