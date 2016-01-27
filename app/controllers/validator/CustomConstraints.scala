@@ -123,25 +123,24 @@ object CustomConstraints {
   }
   val ofEventType = of[EventType]
 
-  implicit def eventStatusFormat = new Formatter[EventStatus] {
-    override val format: Option[(String, Seq[Any])] = Some("format.event.type", Nil)
+  val ofEventStatus = of[Int](new Formatter[Int] {
+      override val format: Option[(String, Seq[Any])] = Some("format.event.type", Nil)
 
-    /**
-     * リクエストデータを EventStatus 型に変換します。
-     * @param key リクエストデータを取り出す際に使用するキー値
-     * @param data リクエストデータ
-     * @return EventStatus 型への変換が失敗した場合フォームエラー。成功した場合変換した値
-     */
-    def bind(key: String, data: Map[String, String]): Either[Seq[FormError], EventStatus] = {
-      intFormat.bind(key, data).right.flatMap { i =>
-        scala.util.control.Exception.allCatch[EventStatus]
-					.either(EventStatus.valueOf(i).get) // 文字列から EventStatus に変換する処理
-					.left.map(e => Seq(FormError(key, "error.event.status", Nil))) // それが失敗した場合
+      /**
+        * リクエストデータを EventStatus 型に変換します。
+        * @param key リクエストデータを取り出す際に使用するキー値
+        * @param data リクエストデータ
+        * @return EventStatus 型への変換が失敗した場合フォームエラー。成功した場合変換した値
+        */
+      def bind(key: String, data: Map[String, String]): Either[Seq[FormError], Int] = {
+        intFormat.bind(key, data).right.flatMap { i =>
+          scala.util.control.Exception.allCatch[Int]
+            .either(EventStatus.valueOf(i).get.value) // 文字列から EventStatus に変換する処理
+            .left.map(e => Seq(FormError(key, "error.event.status", Nil))) // それが失敗した場合
+        }
       }
-    }
 
-    def unbind(key: String, value: EventStatus): Map[String, String] = Map(key -> value.value.toString)
-  }
-  val ofEventStatus = of[EventStatus]
+      def unbind(key: String, value: Int): Map[String, String] = Map(key -> value.toString)
+    })
 
 }
