@@ -1,6 +1,6 @@
 package controllers
 
-import _root_.utils.{FakeLoginController, SpecsCommon}
+import _root_.utils.{Global, FakeLoginController, SpecsCommon}
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.test.Helpers._
@@ -80,6 +80,15 @@ class DevModeSpec extends PlaySpec with OneServerPerSuite with SpecsCommon {
       getLoginAndAjaxRequiredMethods.foreach(action => {
         val result = action.apply(FakeRequest().withXHR().withDummyToken())
         header("X-AJAX-REDIRECT", result).isEmpty mustBe true
+      })
+    }
+  }
+
+  "Slack api" should {
+    "run right" in {
+      Global.slackClient.foreach(slack => {
+        val resp = slack.channels.list()
+        resp.ok mustBe true
       })
     }
   }

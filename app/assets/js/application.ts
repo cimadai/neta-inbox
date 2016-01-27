@@ -46,6 +46,7 @@ $(function () {
             $btn.removeClass("btn-default").addClass("btn-info");
         }
     }
+
     $(".event-reaction").click(function (ev: BaseJQueryEventObject) {
         ev.preventDefault();
         var $btn = $(this);
@@ -55,23 +56,33 @@ $(function () {
             var $reactionsArea = $btn.siblings(".reactions");
             $reactionsArea.empty();
             $.each(json.reactions, function (idx, reaction) {
-                var user = reaction.userInfo;
+                if (idx < json.maxNum) {
+                    var user = reaction.userInfo;
+                    $reactionsArea.append(
+                        $("<span>").append(
+                            $("<img>").attr({
+                                width: "24px",
+                                height: "24px",
+                                src: user.picture,
+                                title: user.fullName
+                            })
+                        ).append(
+                            $("<span>").text(user.fullName)
+                        )
+                    ).append("\n");
+                }
+            });
+
+            if (json.maxNum < json.reactions.length) {
                 $reactionsArea.append(
                     $("<span>").append(
-                        $("<img>").attr({
-                            width: "24px",
-                            height: "24px",
-                            src: user.picture,
-                            title: user.fullName
-                        })
-                    ).append(
-                        $("<span>").text(user.fullName)
+                        "..." + Utils.i18n("event.and.more", json.reactions.length - json.maxNum)
                     )
-                ).append("\n");
-            });
+                );
+            }
         });
-
     });
+
 
     var $eventTag = $(".event-tag-typeahead");
     var allTags = [];
