@@ -2,7 +2,7 @@
 @import tags._
 @import event.parts._
 
-@(flash: Flash, userInfoOrNone: Option[UserInfo], eventInfoWithReactionsList: Iterable[EventInfoWithReaction], assignedNum: Int, notAssignedNum: Int, searchTagOrNone: Option[EventTag], queryOrNone: Option[String])(page: Int, pageSize: Int, numPages: Int)(implicit m: Messages)
+@(flash: Flash, userInfoOrNone: Option[UserInfo], eventInfoWithReactionsList: Iterable[EventInfoWithReaction], assignedNum: Int, notAssignedNum: Int, pastNum: Int, searchTagOrNone: Option[EventTag], queryOrNone: Option[String])(page: Int, pageSize: Int, numPages: Int)(implicit m: Messages)
 
 @title = @{m("title.event")}
 @sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone, searchTagOrNone, queryOrNone)}
@@ -13,6 +13,7 @@
         @information_panel("panel-primary", "fa-star", assignedNum, m("event.user.assigned"), controllers.member.page.routes.EventPage.listAssigned().url)
         @information_panel("panel-green", "fa-star-o", notAssignedNum, m("event.user.not.assigned"), controllers.member.page.routes.EventPage.listNotAssigned().url)
         @information_panel("panel-yellow", "fa-tasks", assignedNum + notAssignedNum, m("event.user.all"), controllers.member.page.routes.EventPage.listAll().url)
+        @information_panel("panel-red", "fa-ban", pastNum, m("event.in.past"), controllers.member.page.routes.EventPage.listAllPast().url)
     </div>
 
     @* 新規作成ボタンとページネーション *@

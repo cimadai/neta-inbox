@@ -41,6 +41,7 @@ event.no.user = 未定
 event.user.assigned = 発表者割当済みのネタ
 event.user.not.assigned = 発表者未割当のネタ
 event.user.all = すべてのネタ
+event.in.past = 過去のネタ
 event.add = 新しいネタを登録する
 event.registerMe = このネタを自分で発表する。
 event.description.placeholder = ネタに関する概要を入力してください。

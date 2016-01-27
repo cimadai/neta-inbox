@@ -15,7 +15,7 @@ abstract class DaoCRUD[Q, E <: Table[Q]] {
   def count()(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
     baseQuery.length.result.runAndAwait.getOrElse(0)
   }
-  def countByFilter[V <: Rep[Boolean]](filter: E => V)(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
+  def countByFilter(filter: E => Rep[Boolean])(implicit acc: DatabaseConfig[JdbcProfile]): Int = {
     baseQuery.filter(filter).length.result.runAndAwait.get
   }
 

@@ -18,7 +18,7 @@ case class EventInfo(
   description: String,
   authorIdOrNone: Option[Long],
   publishDateUnixMillis: Long,
-  status: EventStatus,
+  status: Int,
   duration: Long
 ) extends DatabaseObjectWithId(id)
 
@@ -54,7 +54,7 @@ case class EventInfoForForm(
   description: String,
   authorIdOrNone: Option[Long],
   publishDateUnixMillis: Long,
-  status: EventStatus,
+  status: Int,
   duration: Long,
   tags: List[Long],
   registerMe: Boolean

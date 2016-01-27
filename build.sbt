@@ -25,6 +25,7 @@ lazy val librairies = Seq(
   "net.cimadai" %% "chatwork-scala" % "1.0.1",
   "com.typesafe.play" %% "play-json" % "2.4.4",
   "com.flyberrycapital" %% "scala-slack" % "0.3.0",
+  "com.enragedginger" %% "akka-quartz-scheduler" % "1.4.0-akka-2.3.x",
   "org.scalatest" %% "scalatest" % "2.2.1" % "test",
   "org.scalatestplus" %% "play" % "1.4.0-M3" % "test"
 )

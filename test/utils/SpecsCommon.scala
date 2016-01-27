@@ -84,7 +84,7 @@ object SpecsCommon {
     tag.copy(id = Some(tagId))
   }
   private def createEvent(title: String, description: String, userOrNone: Option[UserInfo], tags: Iterable[EventTag])(implicit dbConfig: DatabaseConfig[JdbcProfile]): EventInfo = {
-    val event = EventInfo(None, EventType.Require, title, description, userOrNone.flatMap(_.id), publishDateUnixMillis = 0, EventStatus.New, duration = 10)
+    val event = EventInfo(None, EventType.Require, title, description, userOrNone.flatMap(_.id), publishDateUnixMillis = 0, EventStatus.New.value, duration = 10)
     val eventId = EventInfoDao.create(event).get
     createEventTagRelation(eventId, tags)
     event.copy(id = Some(eventId))
