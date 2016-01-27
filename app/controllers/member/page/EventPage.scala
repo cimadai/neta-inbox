@@ -108,7 +108,8 @@ object EventPage extends AuthenticateUtil {
         val tags = EventTagRelationDao.findTagsByEventInfoId(eventId)
         val reactions = EventReactionDao.findByEventInfoId(event.id.get)
         Ok(views.html.event.view(request.flash, Some(userInfo), eventInfo, reactions, authorOrNone, tags, eventForm.fill(event)))
-      case _ => NotFound("")
+      case _ =>
+        Ok(views.html.event.notfound(request.flash, Some(userInfo)))
     }
   }
 
