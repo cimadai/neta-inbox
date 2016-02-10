@@ -84,6 +84,49 @@ class DevModeSpec extends PlaySpec with OneServerPerSuite with SpecsCommon {
     }
   }
 
+  "EventPage" should {
+    "remove author by self" in {
+      val user0 = SpecsCommon.getUserByNickName("test0")
+      FakeLoginController.loginAs(user0).apply(FakeRequest())
+      val action = controllers.member.page.EventPage.postData()
+      val event = SpecsCommon.getFirstEvent
+      val result = action.apply(FakeRequest().withDummyToken().withFormUrlEncodedBody(
+        "id" -> event.id.get.toString,
+        "eventType" -> "1",
+        "title" -> "test",
+        "description" -> "test",
+        "authorIdOrNone" -> user0.id.get.toString,
+        "publishDateUnixMillis" -> "0",
+        "status" -> "1",
+        "duration" -> "0",
+        "tags" -> "[]",
+        "registerMe" -> "false"))
+      val eventAfter = SpecsCommon.getFirstEvent
+      eventAfter.authorIdOrNone mustBe None
+    }
+
+    "remove author by other" in {
+      val user0 = SpecsCommon.getUserByNickName("test0")
+      val user1 = SpecsCommon.getUserByNickName("test1")
+      FakeLoginController.loginAs(user1).apply(FakeRequest())
+      val action = controllers.member.page.EventPage.postData()
+      val event = SpecsCommon.getFirstEvent
+      val result = action.apply(FakeRequest().withDummyToken().withFormUrlEncodedBody(
+        "id" -> event.id.get.toString,
+        "eventType" -> "1",
+        "title" -> "test",
+        "description" -> "test",
+        "authorIdOrNone" -> user0.id.get.toString,
+        "publishDateUnixMillis" -> "0",
+        "status" -> "1",
+        "duration" -> "0",
+        "tags" -> "[]",
+        "registerMe" -> "false"))
+      val eventAfter = SpecsCommon.getFirstEvent
+      eventAfter.authorIdOrNone mustBe user0.id
+    }
+  }
+
   "Slack api" should {
     "run right" in {
       Global.slackClient.foreach(slack => {

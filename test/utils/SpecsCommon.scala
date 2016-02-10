@@ -105,7 +105,8 @@ object SpecsCommon {
   }
 
   def setupData()(implicit dbConfig: DatabaseConfig[JdbcProfile]): Unit = {
-    val user0 = createUser("test@example.com", "test", "test", "test", "")
+    val user0 = createUser("test0@example.com", "test0", "test0", "test0", "")
+    val user1 = createUser("test1@example.com", "test1", "test1", "test1", "")
 
     val tagScala = createTag("Scala")
     val tagJavaScript = createTag("JavaScript")
@@ -117,6 +118,7 @@ object SpecsCommon {
   }
 
   def getFirstUser(implicit dbConfig: DatabaseConfig[JdbcProfile]) = UserInfoDao.findFirstByFilter(_.id > 0L).get
+  def getUserByNickName(name: String)(implicit dbConfig: DatabaseConfig[JdbcProfile]) = UserInfoDao.findFirstByFilter(_.nickname === name).get
 
   def getFirstEvent(implicit dbConfig: DatabaseConfig[JdbcProfile]) = EventInfoDao.findFirstByFilter(_.id > 0L).get
 

@@ -1,5 +1,6 @@
 package utils
 
+import models.UserInfo
 import play.api.Application
 import play.api.cache.Cache
 import play.api.mvc.{AnyContentAsEmpty, Action, Controller}
@@ -13,6 +14,10 @@ object FakeLoginController extends Controller {
 
   def login(implicit app: Application, dbConfig: DatabaseConfig[JdbcProfile]) = Action {
     Cache.set(DUMMY_TOKEN + "profile", SpecsCommon.getFirstUser)
+    Ok("ok")
+  }
+  def loginAs(user: UserInfo)(implicit app: Application, dbConfig: DatabaseConfig[JdbcProfile]) = Action {
+    Cache.set(DUMMY_TOKEN + "profile", user)
     Ok("ok")
   }
 
