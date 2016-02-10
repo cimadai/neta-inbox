@@ -14,6 +14,10 @@
 	<title>@title</title>
 	<base href="@controllers.nonmember.page.routes.PublicPage.index">
     <link rel="stylesheet" media="screen" href="@routes.Assets.at("css/main.min.css")">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.min.css" />
+    <!--[if lt IE 9]>
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/github-fork-ribbon-css/0.1.1/gh-fork-ribbon.ie.min.css" />
+    <![endif]-->
 
 	<link rel="shortcut icon" type="image/png" href="@routes.Assets.at("images/favicon.png")">
     <script src="@controllers.nonmember.page.routes.PublicPage.messages" type="text/javascript"></script>
@@ -51,5 +55,10 @@
             <span>@m("app.version", BuildInfo.version, views.support.ViewSupport.formatDateTimeOrDefault(BuildInfo.builtAtMillis, "")) @Html(m("app.copyright"))</span>
         </div>
     </footer>
+    <div class="github-fork-ribbon-wrapper right-bottom">
+        <div class="github-fork-ribbon">
+            <a href="https://github.com/cimadai/neta-inbox">Fork me on GitHub</a>
+        </div>
+    </div>
 </body>
 </html>
