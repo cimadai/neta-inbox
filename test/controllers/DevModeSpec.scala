@@ -1,6 +1,8 @@
 package controllers
 
-import _root_.utils.{Global, FakeLoginController, SpecsCommon}
+import _root_.utils.{FakeLoginController, SpecsCommon}
+import com.flyberrycapital.slack.SlackClient
+import helpers.SlackConfig
 import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
 import play.api.db.slick.DatabaseConfigProvider
 import play.api.test.Helpers._
@@ -129,10 +131,14 @@ class DevModeSpec extends PlaySpec with OneServerPerSuite with SpecsCommon {
 
   "Slack api" should {
     "run right" in {
-      Global.slackClient.foreach(slack => {
+      val slackConfig = SlackConfig.get()
+      if (slackConfig.apiToken.nonEmpty) {
+        val slack = new SlackClient(slackConfig.apiToken)
+        slack.connTimeout(5000)
+        slack.readTimeout(5000)
         val resp = slack.channels.list()
         resp.ok mustBe true
-      })
+      }
     }
   }
 }
