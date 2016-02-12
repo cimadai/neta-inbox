@@ -26,12 +26,12 @@ object Global extends GlobalSettings {
     Logger.info("Play application is starting.")
 
     val config = ChatworkConfig.get()
-    if (config.apiKey.nonEmpty) {
+    if (config.apiKey.nonEmpty && config.roomId.nonEmpty) {
       chatworkClientRef.set(Some(new ChatworkClient(config.apiKey)))
     }
 
     val slackConfig = SlackConfig.get()
-    if (slackConfig.apiToken.nonEmpty) {
+    if (slackConfig.apiToken.nonEmpty && slackConfig.channelName.nonEmpty) {
       val slack = new SlackClient(slackConfig.apiToken)
       slack.connTimeout(5000)
       slack.readTimeout(5000)

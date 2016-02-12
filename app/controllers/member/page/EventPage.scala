@@ -189,7 +189,21 @@ object EventPage extends AuthenticateUtil {
         val newEventInfo = if (formEventInfo.registerMe) {
           formEventInfo.copy(authorIdOrNone = userInfo.id).toEventInfo
         } else {
-          formEventInfo.toEventInfo
+          formEventInfo.id match {
+            case Some(eventInfoId) =>
+              EventInfoDao.findById(eventInfoId) match {
+                case Some(event) => if (event.authorIdOrNone == userInfo.id) {
+                  // 元が自分なら解除できる。
+                  formEventInfo.copy(authorIdOrNone = None).toEventInfo
+                } else {
+                  formEventInfo.toEventInfo
+                }
+                case _ =>
+                  formEventInfo.toEventInfo
+              }
+            case _ =>
+              formEventInfo.toEventInfo
+          }
         }
         val successMessage = newEventInfo.id match {
           case Some(eventInfoId) =>
