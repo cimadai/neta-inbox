@@ -2,11 +2,13 @@ $icon-font-path: '../fonts/bootstrap/';
 $fa-font-path: '../fonts/font-awesome/';
 
 @import 'bootstrap';
+@import 'awesome-bootstrap-checkbox';
 @import 'font-awesome';
 @import 'bootstrap-datetimepicker.min.css';
 @import 'animate.min.css';
 @import 'typeahead.css';
 @import 'sb-admin-2';
+
 
 html {
   position: relative;
@@ -270,3 +272,8 @@ $color-white: #fff;
 .right-bottom .github-fork-ribbon {
   background-color: #333;
 }
+
+.container-fluid > .row:first-child {
+  margin-top: 2em;
+}
+

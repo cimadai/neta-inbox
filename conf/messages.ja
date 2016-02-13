@@ -68,3 +68,9 @@ message.new.event.created.slack = 新しいネタが登録されました\n```�
 message.delete.confirmation.of.event = {0} を削除してもよろしいですか？<br/>削除を実行すると「聞きたい」も消え、取り消すことはできません。
 
 message.event.not_found = お探しのネタは見つかりませんでした。
+message.event.notified = ネタを通知しました！
+message.event.lets.notify = このネタを通知しましょう！
+message.event.title = タイトル: {0}
+message.event.notify.to.slack = Slackに投稿する。
+message.event.notify.to.chatwork = Chatworkに投稿する。
+

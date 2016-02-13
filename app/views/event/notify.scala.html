@@ -1,0 +1,42 @@
+@import base._
+@import tags._
+
+@(flash: Flash, userInfoOrNone: Option[UserInfo], event: EventInfo, authorOrNone: Option[UserInfo], tags: Iterable[EventTag])(implicit m: Messages)
+
+@authorExists = @{authorOrNone.isDefined}
+@title = @{m("title.event.notify")}
+@sidebar = @{views.support.SidebarGenerator.generateBasicSidebarContents(userInfoOrNone)}
+@scripts = @{Html("")}
+
+@fluid_main(flash, title, userInfoOrNone, sidebar, scripts) {
+    <div class="row">
+        <div class="col-md-offset-4 col-md-4">
+            <div class="panel panel-info">
+                <div class="panel-heading">@m("message.event.lets.notify")<br/>(@m("message.event.title", event.title))</div>
+                <div class="panel-body">
+                @helper.form(action = controllers.member.page.routes.EventPage.notifyEventPost()) {
+                    <input type="hidden" name="eventId" value="@{event.id.get}">
+                    <div class="checkbox checkbox-info checkbox-circle">
+                        <input id="notify-to-slack" name="notifyToSlack" class="styled" type="checkbox" value="true" checked="checked">
+                        <label for="notify-to-slack">
+                            <img src="@routes.Assets.at("images/slack_icon.png")" width="18px" style="margin-top: -5px">
+                            @m("message.event.notify.to.slack")
+                        </label>
+                    </div>
+                    <div class="checkbox checkbox-info checkbox-circle">
+                        <input id="notify-to-chatwork" name="notifyToChatwork" class="styled" type="checkbox" value="true">
+                        <label for="notify-to-chatwork">
+                            <img src="@routes.Assets.at("images/chatwork.png")" width="18px" style="margin-top: -5px">
+                            @m("message.event.notify.to.chatwork")
+                        </label>
+                    </div>
+                    <div class="pull-right">
+                        <button class="btn">@m("general.ok")</button>
+                    </div>
+                }
+                </div>
+            </div>
+        </div>
+    </div>
+
+}

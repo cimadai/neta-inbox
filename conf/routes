@@ -15,6 +15,8 @@ GET           /event/list/past                           controllers.member.page
 GET           /event/list/search                         controllers.member.page.EventPage.listSearch(tag: String ?= "", q: String ?= "", page: Int ?= 1, size: Int ?= 10)
 GET           /event/:eventId/edit                       controllers.member.page.EventPage.edit(eventId: Long)
 GET           /event/:eventId/view                       controllers.member.page.EventPage.view(eventId: Long)
+GET           /event/:eventId/notify                     controllers.member.page.EventPage.notifyEvent(eventId: Long)
+POST          /event/notify                              controllers.member.page.EventPage.notifyEventPost
 GET           /event/create                              controllers.member.page.EventPage.create
 POST          /event                                     controllers.member.page.EventPage.postData
 

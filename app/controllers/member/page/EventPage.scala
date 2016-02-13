@@ -37,6 +37,15 @@ object EventPage extends AuthenticateUtil {
     )(EventInfoForForm.apply)(EventInfoForForm.unapply)
   }
 
+  case class NotifyForm(eventId: Long, notifyToSlack: Boolean, notifyToChatwork: Boolean)
+  val notifyForm = Form {
+    mapping(
+      "eventId" -> longNumber,
+      "notifyToSlack" -> default(boolean, false),
+      "notifyToChatwork" -> default(boolean, false)
+    )(NotifyForm.apply)(NotifyForm.unapply)
+  }
+
   private def genPublishDateFilter(ev: (EventInfoTable), publishType: EventPublishType.Value): Rep[Boolean] = {
     publishType match {
       case EventPublishType.All =>
@@ -205,16 +214,14 @@ object EventPage extends AuthenticateUtil {
               formEventInfo.toEventInfo
           }
         }
-        val successMessage = newEventInfo.id match {
+        val (resultMessage, newEventInfoId) = newEventInfo.id match {
           case Some(eventInfoId) =>
             EventInfoDao.update(newEventInfo)
             EventTagRelationDao.deleteByFilter(_.eventInfoId === eventInfoId)
             formEventInfo.tags.foreach(tagId => {
               EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
             })
-            postChatWork("message.event.updated.chatwork", eventInfoId, newEventInfo)
-            postSlack("message.event.updated.slack", eventInfoId, newEventInfo)
-            Messages("event.edit.success")
+            (Messages("event.edit.success"), eventInfoId)
           case _ =>
             EventInfoDao.create(newEventInfo) match {
               case Some(eventInfoId) =>
@@ -222,15 +229,60 @@ object EventPage extends AuthenticateUtil {
                   EventTagRelationDao.create(EventTagRelation(eventInfoId, tagId))
                 })
 
-                postChatWork("message.new.event.created.chatwork", eventInfoId, newEventInfo)
-                postSlack("message.new.event.created.slack", eventInfoId, newEventInfo)
-                Messages("event.create.success")
+                (Messages("event.create.success"), eventInfoId)
               case _ =>
-                Messages("event.create.failed")
+                (Messages("event.create.failed"), 0L)
             }
         }
 
-        Redirect(controllers.member.page.routes.EventPage.listAll()).flashing("success" -> successMessage)
+        if (newEventInfoId > 0) {
+          Redirect(controllers.member.page.routes.EventPage.notifyEvent(newEventInfoId)).flashing("success" -> resultMessage)
+        } else {
+          Redirect(controllers.member.page.routes.EventPage.edit(newEventInfoId)).flashing("error" -> resultMessage)
+        }
+      }
+    )
+  }
+
+  def notifyEvent(eventId: Long) = AuthenticatedAction { implicit request =>
+    implicit val userInfo = getUserInfoOrNone.get
+    EventInfoDao.findById(eventId) match {
+      case Some(eventInfo) =>
+        val authorOrNone = eventInfo.authorIdOrNone.flatMap(UserInfoDao.findById)
+        val tags = EventTagRelationDao.findTagsByEventInfoId(eventId)
+        Ok(views.html.event.notify(request.flash, Some(userInfo), eventInfo, authorOrNone, tags))
+      case _ => NotFound("")
+    }
+  }
+
+  def notifyEventPost() = AuthenticatedAction { implicit request =>
+    notifyForm.bindFromRequest.fold(
+      formWithErrors => {
+        Redirect(controllers.member.page.routes.EventPage.listAll())
+      },
+      formNotifyInfo => {
+        val successMessage = EventInfoDao.findById(formNotifyInfo.eventId) match {
+          case Some(eventInfo) =>
+            if (formNotifyInfo.notifyToSlack) {
+              postSlack("message.event.updated.slack", formNotifyInfo.eventId, eventInfo)
+            }
+
+            if (formNotifyInfo.notifyToChatwork) {
+              postChatWork("message.event.updated.chatwork", formNotifyInfo.eventId, eventInfo)
+            }
+
+            if (formNotifyInfo.notifyToSlack || formNotifyInfo.notifyToChatwork) {
+              Messages("message.event.notified")
+            } else {
+              ""
+            }
+          case _ => ""
+        }
+        if (successMessage.nonEmpty) {
+          Redirect(controllers.member.page.routes.EventPage.listAll()).flashing("success" -> successMessage)
+        } else {
+          Redirect(controllers.member.page.routes.EventPage.listAll())
+        }
       }
     )
   }
